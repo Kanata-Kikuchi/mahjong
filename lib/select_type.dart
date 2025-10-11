@@ -3,14 +3,10 @@ import 'package:mahjong/images.dart';
 import 'package:mahjong/select_tiles.dart';
 
 
-class SelectType extends StatefulWidget {
-  const SelectType({super.key});
+class SelectType extends StatelessWidget {
+  SelectType({required this.onChanged, super.key});
 
-  @override
-  State<SelectType> createState() => _SelectTypeState();
-}
-
-class _SelectTypeState extends State<SelectType> {
+  final void Function(int) onChanged;
 
   List<String> tileIcon = [
     Images.manzu(1),
@@ -43,9 +39,7 @@ class _SelectTypeState extends State<SelectType> {
             ),
             elevation: 3,
           ),
-          onPressed: () {
-            print("$index");
-          },
+          onPressed: () => onChanged(index),
           child: Image.asset(
             tileIcon[index],
             width: 50,

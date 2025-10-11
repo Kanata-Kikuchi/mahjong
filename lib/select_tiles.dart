@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:mahjong/images.dart';
 
 class SelectTiles extends StatelessWidget {
-  SelectTiles({super.key});
+  SelectTiles({required this.typeIndex, required this.initialIndex, this.onTileChanged, super.key});
+
+  final int typeIndex;
+  final int initialIndex;
+  final void Function(int)? onTileChanged;
 
   List<Widget> manzu = [
     Image.asset(Images.manzu(1)),
@@ -52,9 +56,17 @@ class SelectTiles extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+      final List<Widget> tiles =
+      (typeIndex == 0) ? manzu
+    : (typeIndex == 1) ? pinzu
+    : (typeIndex == 2) ? souzu
+    : zihai;
+
     return RotatedBox(
       quarterTurns: -1,
       child: ListWheelScrollView(
+        controller: FixedExtentScrollController(initialItem: initialIndex),
         itemExtent: 50, //子の高さ
         physics: FixedExtentScrollPhysics(),
         diameterRatio: 2.0, //カーブの強さ
@@ -62,10 +74,8 @@ class SelectTiles extends StatelessWidget {
         useMagnifier: true, //中央だけ拡大
         magnification: 1.1, //拡大比率
         overAndUnderCenterOpacity: 0.4, //端の透明度
-        onSelectedItemChanged: (value) {
-          
-        },
-        children: manzu.map((buf) => RotatedBox(quarterTurns: 1, child: buf)).toList(),
+        onSelectedItemChanged: (i) => onTileChanged?.call(i),
+        children: tiles.map((buf) => RotatedBox(quarterTurns: 1, child: buf)).toList(),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mahjong/agari_tiles.dart';
 import 'package:mahjong/boxes.dart';
 import 'package:mahjong/images.dart';
+import 'package:mahjong/pick_a.dart';
 import 'package:mahjong/select_tiles.dart';
 import 'package:mahjong/select_type.dart';
 import 'package:mahjong/select_action.dart';
@@ -28,11 +29,7 @@ class PageA extends StatelessWidget {
                   BoxB("SelectType", 9999, 260),
                   Padding(padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20), child:Column(children: [
                     SizedBox(height: 16),
-                    SelectType(),
-                    Transform.translate(offset: Offset(0, -16), child: Stack(children: [
-                      BoxA(140, 108),
-                      SizedBox(width: 140, height: 108, child: SelectTiles())
-                    ]))
+                    PickA()
                   ]))
                 ],)
               ),
