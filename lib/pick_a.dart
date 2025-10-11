@@ -13,7 +13,6 @@ class PickA extends StatefulWidget {
 class _PickAState extends State<PickA> {
 
   int _selectType = 0;
-  int _selectTilesIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -21,18 +20,17 @@ class _PickAState extends State<PickA> {
       SelectType(
         onChanged: (i) => setState(() {
           _selectType = i;
-          _selectTilesIndex = 0;
         }),
       ),
       Transform.translate(offset: Offset(0, -16), child: Stack(children: [
         BoxA(140, 108),
         SizedBox(width: 140, height: 108, child: SelectTiles(
-          key: ValueKey(_selectType),
+
+          /* 基本的にWidhetは再利用されるため、牌種(Configuratioon)を変更してもスクロール位置が保持される(State)。
+          keyの変更を明示すると再build時にWidgetの作り変えが起き、スクロール位置が初期値になる。*/
+          key: UniqueKey(),
+          
           typeIndex: _selectType,
-          initialIndex: _selectTilesIndex,
-          onTileChanged: (i) => setState(() {
-            _selectTilesIndex = i;
-          }),
         ))
       ]))
     ],);

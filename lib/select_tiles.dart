@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:mahjong/images.dart';
 
 class SelectTiles extends StatelessWidget {
-  SelectTiles({required this.typeIndex, required this.initialIndex, this.onTileChanged, super.key});
+  SelectTiles({required this.typeIndex, super.key});
 
-  final int typeIndex;
-  final int initialIndex;
-  final void Function(int)? onTileChanged;
+  final int typeIndex; //PickAで管理するための変数.
 
   List<Widget> manzu = [
     Image.asset(Images.manzu(1)),
@@ -57,7 +55,7 @@ class SelectTiles extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-      final List<Widget> tiles =
+    final List<Widget> tiles = //PickAで管理している状態によって表示するリストを変更.
       (typeIndex == 0) ? manzu
     : (typeIndex == 1) ? pinzu
     : (typeIndex == 2) ? souzu
@@ -66,15 +64,13 @@ class SelectTiles extends StatelessWidget {
     return RotatedBox(
       quarterTurns: -1,
       child: ListWheelScrollView(
-        controller: FixedExtentScrollController(initialItem: initialIndex),
-        itemExtent: 50, //子の高さ
+        itemExtent: 50, //子の高さ.
         physics: FixedExtentScrollPhysics(),
-        diameterRatio: 2.0, //カーブの強さ
-        perspective: 0.001, //奥行の見え方
-        useMagnifier: true, //中央だけ拡大
-        magnification: 1.1, //拡大比率
-        overAndUnderCenterOpacity: 0.4, //端の透明度
-        onSelectedItemChanged: (i) => onTileChanged?.call(i),
+        diameterRatio: 2.0, //カーブの強さ.
+        perspective: 0.001, //奥行の見え方.
+        useMagnifier: true, //中央だけ拡大.
+        magnification: 1.1, //拡大比率.
+        overAndUnderCenterOpacity: 0.4, //端の透明度.
         children: tiles.map((buf) => RotatedBox(quarterTurns: 1, child: buf)).toList(),
       ),
     );
