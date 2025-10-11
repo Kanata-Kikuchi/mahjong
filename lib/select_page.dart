@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mahjong/page_a.dart';
-import 'package:mahjong/page_b.dart';
 
 class SelectPage extends StatefulWidget {
   const SelectPage({super.key});
@@ -15,7 +14,6 @@ class _SelectPageState extends State<SelectPage> {
 
   final pages = const [
     PageA(),
-    PageB(),
   ];
 
   @override

@@ -2,28 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:mahjong/images.dart';
 import 'package:mahjong/meld_tiles.dart';
 
-class SelectActionWidget extends StatefulWidget {
-  const SelectActionWidget({super.key});
+class SelectMeld extends StatelessWidget {
+  SelectMeld({required this.typeIndex, required this.tileIndex, super.key});
 
-  @override
-  State<SelectActionWidget> createState() => _SelectActionWidgetState();
-}
-
-class _SelectActionWidgetState extends State<SelectActionWidget> {
-
-  List<Widget> tileIconAction = [
-    Syuntu(),
-    Anko(),
-    Chi(),
-    Pon(),
-    Transform.scale(scale: 0.8, child: Ankan()),
-    Transform.scale(scale: 0.8, child: Minkan()),
-    Transform.scale(scale: 1.6, child: Tsumo()),
-    Transform.scale(scale: 1.6, child: Ron()),
-  ];
+  final int typeIndex;
+  final int tileIndex;
 
   @override
   Widget build(BuildContext context) {
+
+    List<Widget> tileIconMeld = [
+      Syuntu(typeIndex: typeIndex, tileIndex: tileIndex),
+      Anko(typeIndex: typeIndex, tileIndex: tileIndex),
+      Chi(typeIndex: typeIndex, tileIndex: tileIndex),
+      Pon(typeIndex: typeIndex, tileIndex: tileIndex),
+      Transform.scale(scale: 0.8, child: Ankan(typeIndex: typeIndex, tileIndex: tileIndex)),
+      Transform.scale(scale: 0.8, child: Minkan(typeIndex: typeIndex, tileIndex: tileIndex)),
+      Transform.scale(scale: 1.6, child: Tsumo(typeIndex: typeIndex, tileIndex: tileIndex)),
+      Transform.scale(scale: 1.6, child: Ron(typeIndex: typeIndex, tileIndex: tileIndex)),
+    ];
+
     return GridView.builder(
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -47,11 +45,12 @@ class _SelectActionWidgetState extends State<SelectActionWidget> {
             elevation: 3,
           ),
           onPressed: () {
-            print("$index");
+            print("$tileIndex");
           },
-          child: tileIconAction[index],
+          child: tileIconMeld[index],
         );
       }
     );
   }
 }
+

@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mahjong/images.dart';
 import 'package:mahjong/page_a.dart';
-import 'package:mahjong/page_b.dart';
 import 'package:mahjong/select_page.dart';
 
 

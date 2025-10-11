@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:mahjong/images.dart';
 
 class SelectTiles extends StatelessWidget {
-  SelectTiles({required this.typeIndex, super.key});
+  SelectTiles({required this.typeIndex, required this.onChanged, super.key});
 
-  final int typeIndex; //PickAで管理するための変数.
+  final int typeIndex; //PageAで管理するための変数.
+  final void Function(int) onChanged;
 
   List<Widget> manzu = [
     Image.asset(Images.manzu(1)),
@@ -71,6 +72,7 @@ class SelectTiles extends StatelessWidget {
         useMagnifier: true, //中央だけ拡大.
         magnification: 1.1, //拡大比率.
         overAndUnderCenterOpacity: 0.4, //端の透明度.
+        onSelectedItemChanged: (i) => onChanged(i),
         children: tiles.map((buf) => RotatedBox(quarterTurns: 1, child: buf)).toList(),
       ),
     );
