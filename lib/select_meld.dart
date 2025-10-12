@@ -3,10 +3,11 @@ import 'package:mahjong/images.dart';
 import 'package:mahjong/meld_tiles.dart';
 
 class SelectMeld extends StatelessWidget {
-  SelectMeld({required this.typeIndex, required this.tileIndex, super.key});
+  SelectMeld({required this.typeIndex, required this.tileIndex, required this.onChanged, super.key});
 
   final int typeIndex;
   final int tileIndex;
+  final void Function(int) onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +19,8 @@ class SelectMeld extends StatelessWidget {
       Pon(typeIndex: typeIndex, tileIndex: tileIndex),
       Transform.scale(scale: 0.8, child: Ankan(typeIndex: typeIndex, tileIndex: tileIndex)),
       Transform.scale(scale: 0.8, child: Minkan(typeIndex: typeIndex, tileIndex: tileIndex)),
-      Transform.scale(scale: 1.6, child: Tsumo(typeIndex: typeIndex, tileIndex: tileIndex)),
-      Transform.scale(scale: 1.6, child: Ron(typeIndex: typeIndex, tileIndex: tileIndex)),
+      Transform.scale(scale: 1.6, child: Toitsu(typeIndex: typeIndex, tileIndex: tileIndex)),
+      Transform.scale(scale: 1.6, child: Tanki(typeIndex: typeIndex, tileIndex: tileIndex)),
     ];
 
     return GridView.builder(
@@ -44,9 +45,7 @@ class SelectMeld extends StatelessWidget {
             ),
             elevation: 3,
           ),
-          onPressed: () {
-            print("$tileIndex");
-          },
+          onPressed: () => onChanged(index),
           child: tileIconMeld[index],
         );
       }

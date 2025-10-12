@@ -431,8 +431,8 @@ class Anko extends StatelessWidget {
   }
 }
 
-class Tsumo extends StatelessWidget {
-  const Tsumo({required this.typeIndex, required this.tileIndex, super.key});
+class Toitsu extends StatelessWidget {
+  const Toitsu({required this.typeIndex, required this.tileIndex, super.key});
 
   final int typeIndex;
   final int tileIndex;
@@ -451,17 +451,21 @@ class Tsumo extends StatelessWidget {
       width: 50,
       child: FittedBox(
         fit: BoxFit.contain,
-        child: Transform.translate(
+        child: Row(children: [
+          Transform.translate(
           offset: Offset(0, 0),
-          child: tiles[tileIndex]
-        ),
-      )
+          child: tiles[tileIndex]),
+          Transform.translate(
+          offset: Offset(0, 0),
+          child: tiles[tileIndex])
+        ],)
+      ),
     );
   }
 }
 
-class Ron extends StatelessWidget {
-  const Ron({required this.typeIndex, required this.tileIndex, super.key});
+class Tanki extends StatelessWidget {
+  const Tanki({required this.typeIndex, required this.tileIndex, super.key});
 
   final int typeIndex;
   final int tileIndex;
@@ -482,11 +486,9 @@ class Ron extends StatelessWidget {
         fit: BoxFit.contain,
         child: Transform.translate(
           offset: Offset(0, 0),
-          child: Transform.rotate(
-            angle: -math.pi/2, child: tiles[tileIndex]
-          )
-        ),
-      )
+          child: back
+        )
+      ),
     );
   }
 }
