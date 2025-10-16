@@ -26,16 +26,34 @@ class BoxA extends StatelessWidget {
 class BoxB extends StatelessWidget {
 
   final String label;
-  final double width;
-  final double height;
+  final Widget child;
 
-  const BoxB(this.label, this.width, this.height, {super.key});
+  const BoxB(this.label, {required this.child, super.key});
 
   @override
   Widget build(BuildContext context) {
+
+    const double horizontal = 10;
+    const double vertical = 20;
+    
+    Widget _test = ColoredBox(color: Colors.black, child: child,);
+
     return Stack(
+      clipBehavior: Clip.none,
       children: [
-        Container(width: width, height: height, color: Colors.lightBlue),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: horizontal, vertical: vertical),
+          decoration: BoxDecoration(
+            color: Colors.lightBlue[100],
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.black26),
+          ),
+          child: SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: _test
+          )
+        ),
         Transform.translate(
           offset: Offset(12, -10),
           child: Container(

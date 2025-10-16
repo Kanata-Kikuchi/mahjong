@@ -64,17 +64,21 @@ class SelectTiles extends StatelessWidget {
 
     return RotatedBox(
       quarterTurns: -1,
-      child: ListWheelScrollView(
-        itemExtent: 50, //子の高さ.
-        physics: FixedExtentScrollPhysics(),
-        diameterRatio: 2.0, //カーブの強さ.
-        perspective: 0.001, //奥行の見え方.
-        useMagnifier: true, //中央だけ拡大.
-        magnification: 1.1, //拡大比率.
-        overAndUnderCenterOpacity: 0.4, //端の透明度.
-        onSelectedItemChanged: (i) => onChanged(i),
-        children: tiles.map((buf) => RotatedBox(quarterTurns: 1, child: buf)).toList(),
-      ),
+      child: LayoutBuilder(
+        builder: (context, c) {
+          return ListWheelScrollView(
+            itemExtent: c.maxHeight / 3.5, //子の高さ.
+            physics: FixedExtentScrollPhysics(),
+            diameterRatio: 2.0, //カーブの強さ.
+            perspective: 0.001, //奥行の見え方.
+            useMagnifier: true, //中央だけ拡大.
+            magnification: 1.1, //拡大比率.
+            overAndUnderCenterOpacity: 0.4, //端の透明度.
+            onSelectedItemChanged: (i) => onChanged(i),
+            children: tiles.map((buf) => RotatedBox(quarterTurns: 1, child: buf)).toList(),
+          );
+        },
+      )
     );
   }
 }

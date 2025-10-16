@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mahjong/images.dart';
-import 'package:mahjong/meld_tiles.dart';
-
-Image back = Image.asset(Images.back.path, scale: 1.7);
+import 'package:mahjong/page_a/meld_tiles.dart';
 
 class AgariTiles extends StatelessWidget {
   AgariTiles({required this.brockTiles, required this.huroTiles, super.key});
@@ -15,19 +13,13 @@ class AgariTiles extends StatelessWidget {
     return FittedBox(
       fit: BoxFit.contain,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           SizedBox(width: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: brockTiles,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: huroTiles,
-          ),
-          SizedBox(width: 10),
-        ],
+          Row(children: brockTiles),
+
+          Row(children: huroTiles),
+          SizedBox(width: 10)
+        ]
       ),
     );
   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mahjong/page_a.dart';
+import 'package:mahjong/page_a/page_a.dart';
 
 class SelectPage extends StatefulWidget {
   const SelectPage({super.key});

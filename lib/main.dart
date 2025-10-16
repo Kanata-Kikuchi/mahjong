@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mahjong/images.dart';
-import 'package:mahjong/page_a.dart';
+import 'package:mahjong/page_a/page_a.dart';
 import 'package:mahjong/select_page.dart';
 
 
