@@ -63,17 +63,3 @@ class SelectMeld extends StatelessWidget {
   }
 }
 
-//              ElevatedButton(
-//               style: ElevatedButton.styleFrom(
-//                 backgroundColor: Colors.white,
-//                 foregroundColor: Colors.black,
-//                 padding: EdgeInsets.all(10), //ボタンの中のアイコンの大きさ
-//                 shape: RoundedRectangleBorder(
-//                   borderRadius: BorderRadius.circular(8),
-//                   side: const BorderSide(color: Colors.red),
-//                 ),
-//                 elevation: 3,
-//               ),
-//               onPressed: () => onChanged(index),
-//               child: tiles[index],
-//             );

@@ -51,6 +51,211 @@ import 'dart:math' as math;
 
   final back = Image.asset(Images.backTile(1));
 
+class Syuntu extends StatelessWidget {
+  const Syuntu({required this.typeIndex, required this.tileIndex, super.key});
+
+  final int typeIndex;
+  final int tileIndex;
+  
+  @override
+  Widget build(BuildContext context) {
+
+    final List<Widget> tiles = //PickBで管理している状態によって表示するリストを変更.
+      (typeIndex == 0) ? manzu
+    : (typeIndex == 1) ? pinzu
+    : (typeIndex == 2) ? souzu
+    : zihai;
+
+    if (typeIndex > 2 || tileIndex > 6) {
+      return LayoutBuilder(
+        builder: (context, c) {
+          return SizedBox(
+            height: c.maxHeight,
+            width: c.maxWidth / 3,
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: Stack(
+                alignment: Alignment.center,
+                clipBehavior: Clip.none,
+                children: [
+                  Transform.translate( //右.
+                    offset: Offset(82, 0),
+                    child: back
+                  ),
+                  Transform.translate( //中.
+                    offset: Offset(0, 0),
+                    child: back
+                  ),
+                  Transform.translate( //左.
+                    offset: Offset(-82, 0),
+                    child: back
+                  ),
+                ],
+              )
+            ),
+          );
+        },
+      );
+    } else {
+      return LayoutBuilder(
+        builder: (context, c) {
+          return SizedBox(
+            height: c.maxHeight,
+            width: c.maxWidth / 3,
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: Stack(
+                alignment: Alignment.center,
+                clipBehavior: Clip.none,
+                children: [
+                  Transform.translate( //右.
+                    offset: Offset(82, 0),
+                    child: tiles[tileIndex + 2]
+                  ),
+                  Transform.translate( //中.
+                    offset: Offset(0, 0),
+                    child: tiles[tileIndex + 1]
+                  ),
+                  Transform.translate( //左.
+                    offset: Offset(-82, 0),
+                    child: tiles[tileIndex]
+                  ),
+                ],
+              )
+            ),
+          );
+        },
+      );
+    }
+  }
+}
+
+class Anko extends StatelessWidget {
+  const Anko({required this.typeIndex, required this.tileIndex, super.key});
+
+  final int typeIndex;
+  final int tileIndex;
+
+  @override
+  Widget build(BuildContext context) {
+
+    final List<Widget> tiles = //PickBで管理している状態によって表示するリストを変更.
+      (typeIndex == 0) ? manzu
+    : (typeIndex == 1) ? pinzu
+    : (typeIndex == 2) ? souzu
+    : zihai;
+    
+    return LayoutBuilder(
+      builder: (context, c) {
+        return SizedBox(
+          height: c.maxHeight,
+          width: c.maxWidth / 3,
+          child: FittedBox(
+            fit: BoxFit.contain,
+            child: Stack(
+              alignment: Alignment.center,
+              clipBehavior: Clip.none,
+              children: [
+                Transform.translate( //右.
+                  offset: Offset(82, 0),
+                  child: tiles[tileIndex]
+                ),
+                Transform.translate( //中.
+                  offset: Offset(0, 0),
+                  child: tiles[tileIndex]
+                ),
+                Transform.translate( //左.
+                  offset: Offset(-82, 0),
+                  child: tiles[tileIndex]
+                ),
+              ],
+            )
+          ),
+        );
+      },
+    );
+  }
+}
+
+class Chi extends StatelessWidget {
+  const Chi({required this.typeIndex, required this.tileIndex, super.key});
+
+  final int typeIndex;
+  final int tileIndex;
+
+  @override
+  Widget build(BuildContext context) {
+
+    final List<Widget> tiles = //PickBで管理している状態によって表示するリストを変更.
+      (typeIndex == 0) ? manzu
+    : (typeIndex == 1) ? pinzu
+    : (typeIndex == 2) ? souzu
+    : zihai;
+
+    if (typeIndex > 2 || tileIndex > 6) {
+      return LayoutBuilder(
+        builder: (context, c) {
+          return SizedBox(
+            height: c.maxHeight,
+            width: c.maxWidth / 3,
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child:Stack(
+                alignment: Alignment.center,
+                clipBehavior: Clip.none,
+                children: [
+                  Transform.translate( //左.
+                    offset: Offset(-71, 18),
+                    child: Transform.rotate(angle: math.pi/2, child: back)
+                  ),
+                  Transform.translate( //右.
+                    offset: Offset(92, 0),
+                    child: back
+                  ),
+                  Transform.translate( //中.
+                    offset: Offset(10, 0),
+                    child: back
+                  ),
+                ],
+              )
+            ),
+          );
+        },
+      );
+    } else {
+      return LayoutBuilder(
+        builder: (context, c) {
+          return SizedBox(
+            height: c.maxHeight,
+            width: c.maxWidth / 3,
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child:Stack(
+                alignment: Alignment.center,
+                clipBehavior: Clip.none,
+                children: [
+                  Transform.translate( //左.
+                    offset: Offset(-71, 18),
+                    child: Transform.rotate(angle: math.pi/2, child: tiles[tileIndex])
+                  ),
+                  Transform.translate( //右.
+                    offset: Offset(92, 0),
+                    child: tiles[tileIndex + 2]
+                  ),
+                  Transform.translate( //中.
+                    offset: Offset(10, 0),
+                    child: tiles[tileIndex + 1]
+                  ),
+                ],
+              )
+            ),
+          );
+        },
+      );
+    }
+  }
+}
+
 class Pon extends StatelessWidget {
   Pon({required this.typeIndex, required this.tileIndex, super.key});
 
@@ -94,117 +299,6 @@ class Pon extends StatelessWidget {
           ),
         );
       }
-    );
-  }
-}
-
-class Chi extends StatelessWidget {
-  const Chi({required this.typeIndex, required this.tileIndex, super.key});
-
-  final int typeIndex;
-  final int tileIndex;
-
-  @override
-  Widget build(BuildContext context) {
-
-    final List<Widget> tiles = //PickBで管理している状態によって表示するリストを変更.
-      (typeIndex == 0) ? manzu
-    : (typeIndex == 1) ? pinzu
-    : (typeIndex == 2) ? souzu
-    : zihai;
-
-    if (typeIndex > 2) {
-      return LayoutBuilder(
-        builder: (context, c) {
-          return SizedBox(
-            height: c.maxHeight,
-            width: c.maxWidth / 3,
-            child: FittedBox(
-              fit: BoxFit.contain,
-              child:Stack(
-                alignment: Alignment.center,
-                clipBehavior: Clip.none,
-                children: [
-                  Transform.translate( //左.
-                    offset: Offset(-71, 18),
-                    child: Transform.rotate(angle: math.pi/2, child: back)
-                  ),
-                  Transform.translate( //右.
-                    offset: Offset(92, 0),
-                    child: back
-                  ),
-                  Transform.translate( //中.
-                    offset: Offset(10, 0),
-                    child: back
-                  ),
-                ],
-              )
-            ),
-          );
-        },
-      );
-    }
-
-    if (tileIndex > 6) {
-      return LayoutBuilder(
-        builder: (context, c) {
-          return SizedBox(
-            height: c.maxHeight,
-            width: c.maxWidth / 3,
-            child: FittedBox(
-              fit: BoxFit.contain,
-              child:Stack(
-                alignment: Alignment.center,
-                clipBehavior: Clip.none,
-                children: [
-                  Transform.translate( //左.
-                    offset: Offset(-71, 18),
-                    child: Transform.rotate(angle: math.pi/2, child: back)
-                  ),
-                  Transform.translate( //右.
-                    offset: Offset(92, 0),
-                    child: back
-                  ),
-                  Transform.translate( //中.
-                    offset: Offset(10, 0),
-                    child: back
-                  ),
-                ],
-              )
-            ),
-          );
-        },
-      );
-    }
-
-    return LayoutBuilder(
-      builder: (context, c) {
-        return SizedBox(
-          height: c.maxHeight,
-          width: c.maxWidth / 3,
-          child: FittedBox(
-            fit: BoxFit.contain,
-            child:Stack(
-              alignment: Alignment.center,
-              clipBehavior: Clip.none,
-              children: [
-                Transform.translate( //左.
-                  offset: Offset(-71, 18),
-                  child: Transform.rotate(angle: math.pi/2, child: tiles[tileIndex])
-                ),
-                Transform.translate( //右.
-                  offset: Offset(92, 0),
-                  child: tiles[tileIndex + 2]
-                ),
-                Transform.translate( //中.
-                  offset: Offset(10, 0),
-                  child: tiles[tileIndex + 1]
-                ),
-              ],
-            )
-          ),
-        );
-      },
     );
   }
 }
@@ -302,164 +396,6 @@ class Minkan extends StatelessWidget {
                 ),
                 Transform.translate( //左.
                   offset: Offset(-130, 0),
-                  child: tiles[tileIndex]
-                ),
-              ],
-            )
-          ),
-        );
-      },
-    );
-  }
-}
-
-class Syuntu extends StatelessWidget {
-  const Syuntu({required this.typeIndex, required this.tileIndex, super.key});
-
-  final int typeIndex;
-  final int tileIndex;
-
-  @override
-  Widget build(BuildContext context) {
-
-    final List<Widget> tiles = //PickBで管理している状態によって表示するリストを変更.
-      (typeIndex == 0) ? manzu
-    : (typeIndex == 1) ? pinzu
-    : (typeIndex == 2) ? souzu
-    : zihai;
-
-    if (typeIndex > 2) {
-      return LayoutBuilder(
-        builder: (context, c) {
-          return SizedBox(
-            height: c.maxHeight,
-            width: c.maxWidth / 3,
-            child: FittedBox(
-              fit: BoxFit.contain,
-              child: Stack(
-                alignment: Alignment.center,
-                clipBehavior: Clip.none,
-                children: [
-                  Transform.translate( //右.
-                    offset: Offset(82, 0),
-                    child: back
-                  ),
-                  Transform.translate( //中.
-                    offset: Offset(0, 0),
-                    child: back
-                  ),
-                  Transform.translate( //左.
-                    offset: Offset(-82, 0),
-                    child: back
-                  ),
-                ],
-              )
-            ),
-          );
-        },
-      );
-    }
-
-    if (tileIndex > 6) {
-      return LayoutBuilder(
-        builder: (context, c) {
-          return SizedBox(
-            height: c.maxHeight,
-            width: c.maxWidth / 3,
-            child: FittedBox(
-              fit: BoxFit.contain,
-              child: Stack(
-                alignment: Alignment.center,
-                clipBehavior: Clip.none,
-                children: [
-                  Transform.translate( //右.
-                    offset: Offset(82, 0),
-                    child: back
-                  ),
-                  Transform.translate( //中.
-                    offset: Offset(0, 0),
-                    child: back
-                  ),
-                  Transform.translate( //左.
-                    offset: Offset(-82, 0),
-                    child: back
-                  ),
-                ],
-              )
-            ),
-          );
-        },
-      );
-    }
-
-    return LayoutBuilder(
-      builder: (context, c) {
-        return SizedBox(
-          height: c.maxHeight,
-          width: c.maxWidth / 3,
-          child: FittedBox(
-            fit: BoxFit.contain,
-            child: Stack(
-              alignment: Alignment.center,
-              clipBehavior: Clip.none,
-              children: [
-                Transform.translate( //右.
-                  offset: Offset(82, 0),
-                  child: tiles[tileIndex + 2]
-                ),
-                Transform.translate( //中.
-                  offset: Offset(0, 0),
-                  child: tiles[tileIndex + 1]
-                ),
-                Transform.translate( //左.
-                  offset: Offset(-82, 0),
-                  child: tiles[tileIndex]
-                ),
-              ],
-            )
-          ),
-        );
-      },
-    );
-  }
-}
-
-class Anko extends StatelessWidget {
-  const Anko({required this.typeIndex, required this.tileIndex, super.key});
-
-  final int typeIndex;
-  final int tileIndex;
-
-  @override
-  Widget build(BuildContext context) {
-
-    final List<Widget> tiles = //PickBで管理している状態によって表示するリストを変更.
-      (typeIndex == 0) ? manzu
-    : (typeIndex == 1) ? pinzu
-    : (typeIndex == 2) ? souzu
-    : zihai;
-
-    return LayoutBuilder(
-      builder: (context, c) {
-        return SizedBox(
-          height: c.maxHeight,
-          width: c.maxWidth / 3,
-          child: FittedBox(
-            fit: BoxFit.contain,
-            child: Stack(
-              alignment: Alignment.center,
-              clipBehavior: Clip.none,
-              children: [
-                Transform.translate( //右.
-                  offset: Offset(82, 0),
-                  child: tiles[tileIndex]
-                ),
-                Transform.translate( //中.
-                  offset: Offset(0, 0),
-                  child: tiles[tileIndex]
-                ),
-                Transform.translate( //左.
-                  offset: Offset(-82, 0),
                   child: tiles[tileIndex]
                 ),
               ],

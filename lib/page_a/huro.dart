@@ -35,13 +35,5 @@ class Huro extends StatelessWidget {
         )
       )
     );
-    // Container(
-    //   height: 100,
-    //   width: 100,
-    //   child:Padding(
-    //     padding: EdgeInsets.all(20),
-    //     child: tiles[offsetIndex]
-    //   )
-    // );
   }
 }
