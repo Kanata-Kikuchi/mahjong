@@ -1,5 +1,6 @@
 enum Images {
-  //マンズ
+
+  //マンズ.
   manzu_1("assets/images/manzu_1.png"),
   manzu_2("assets/images/manzu_2.png"),
   manzu_3("assets/images/manzu_3.png"),
@@ -10,7 +11,9 @@ enum Images {
   manzu_7("assets/images/manzu_7.png"),
   manzu_8("assets/images/manzu_8.png"),
   manzu_9("assets/images/manzu_9.png"),
-  //ピンズ
+
+
+  //ピンズ.
   pinzu_1("assets/images/pinzu_1.png"),
   pinzu_2("assets/images/pinzu_2.png"),
   pinzu_3("assets/images/pinzu_3.png"),
@@ -21,7 +24,9 @@ enum Images {
   pinzu_7("assets/images/pinzu_7.png"),
   pinzu_8("assets/images/pinzu_8.png"),
   pinzu_9("assets/images/pinzu_9.png"),
-  //ソウズ
+
+
+  //ソウズ.
   souzu_1("assets/images/souzu_1.png"),
   souzu_2("assets/images/souzu_2.png"),
   souzu_3("assets/images/souzu_3.png"),
@@ -32,7 +37,9 @@ enum Images {
   souzu_7("assets/images/souzu_7.png"),
   souzu_8("assets/images/souzu_8.png"),
   souzu_9("assets/images/souzu_9.png"),
-  //ジハイ
+
+
+  //ジハイ.
   zihai_1("assets/images/zihai_1.png"),
   zihai_2("assets/images/zihai_2.png"),
   zihai_3("assets/images/zihai_3.png"),
@@ -40,11 +47,15 @@ enum Images {
   zihai_5("assets/images/zihai_5.png"),
   zihai_6("assets/images/zihai_6.png"),
   zihai_7("assets/images/zihai_7.png"),
-  //バック
+
+
+  //バック.
   back("assets/images/back.png");
+
 
   final String path;
   const Images(this.path);
+
 
   static String manzu(int i) {
     switch(i) {
@@ -60,6 +71,7 @@ enum Images {
       default: throw ArgumentError('Invalid manzu index: $i');
     }
   }
+
   static String pinzu(int i) {
     switch(i) {
       case 1: return Images.pinzu_1.path;
@@ -74,6 +86,7 @@ enum Images {
       default: throw ArgumentError("Invalid pinzu index: $i");
     }
   }
+
   static String souzu(int i) {
     switch(i) {
       case 1: return Images.souzu_1.path;
@@ -88,6 +101,7 @@ enum Images {
       default: throw ArgumentError("Invalid souzu index: $i");
     }
   }
+
   static String zihai(int i) {
     switch(i) {
       case 1: return Images.zihai_1.path;
@@ -100,6 +114,7 @@ enum Images {
       default: throw ArgumentError("Invalid zihai index: $i");
     }
   }
+  
   static String backTile(int i) {
     switch(i) {
       case 1: return Images.back.path;

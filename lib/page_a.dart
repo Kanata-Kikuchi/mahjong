@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:mahjong/page_a/agari_tiles.dart';
+import 'package:mahjong/widgets/agari_tiles.dart';
 import 'package:mahjong/boxes.dart';
-import 'package:mahjong/page_a/huro.dart';
-import 'package:mahjong/images.dart';
-import 'package:mahjong/page_a/meld_tiles.dart';
-import 'package:mahjong/page_a/score.dart';
-import 'package:mahjong/page_a/select_option.dart';
-import 'package:mahjong/page_a/select_tiles.dart';
-import 'package:mahjong/page_a/select_type.dart';
-import 'package:mahjong/page_a/select_meld.dart';
+import 'package:mahjong/models/huro.dart';
+import 'package:mahjong/data/images.dart';
+import 'package:mahjong/models/meld_tiles.dart';
+import 'package:mahjong/widgets/score/score.dart';
+import 'package:mahjong/widgets/select_option.dart';
+import 'package:mahjong/widgets/select_tiles.dart';
+import 'package:mahjong/widgets/select_type.dart';
+import 'package:mahjong/widgets/select_meld.dart';
 
 
 final List<Widget> manzu = [
@@ -74,25 +74,32 @@ class _PageAState extends State<PageA> {
   double sizedBoxWidth = 10;
   double sizedBoxHeight = 10;
 
-  int _selectType = 0;
-  int _selectTile = 0;
-  int _selectMeld = 0;
+  int _selectType = 0; // マン・ピン・ソウ・ジ.
+  int _selectTile = 0; // １～９・東～中.
+  int _selectMeld = 0; // 順子・暗刻・チー・ポン・暗槓・明槓・対子（・単騎）.
 
-  int _countBrock = 0;
-  int _countMenzen = 0;
-  int _countToitsu = 0;
-  int _countHuro = 0;
-  int _countPushTsumoRon = 0;
+  int _countBrock = 0; // ５ブロック・７ブロック（七対子）.
+  int _countMenzen = 0; // １４枚.
+  int _countToitsu = 0; // 対子が何組か.
+  int _countHuro = 0; // ブロック数の把握.
+
+  bool _flagRon = false;
+  bool _flagTsumo = false;
+  bool _flagCal = false;
+
+  String _labelCal = "計算";
   
-  List<Widget> _menzen = List.generate(14, (_) => back);
-  List<Widget> _huro = [];
-  List<Widget> _menzenRecord = [];
-  List<int> _recordPushMeldType = [];
-  List<(int type, int tile)> _bufToitsu = [];
-  List<(int type, int tile)> _bufBrock = [];
-  List<(int type, int tile)> _bufAgari = [];
+  List<Widget> _menzen = List.generate(14, (_) => back); // 描画用、面前手牌.
+  final List<Widget> _huro = []; // 描画用、副露手牌.
+  List<Widget> _menzenRecord = []; // ロン・ツモ・戻るボタンを機能させるバッファー.
+  final List<int> _recordPushMeldType = []; // 戻るボタンで使うフラグ.
+  final List<(int type, int tile)> _bufToitsu = []; // 七対子で同一の牌を選択しないようにするため.
+  final List<(int type, int tile)> _bufMenzen = []; // ロン・ツモを押したら並び替えるため.
+  final List<(int type, int tile)> _bufAgari = []; // ４枚以上にならないように管理するため.
+  final List<((int type, int tile), int meld)> _agariCal = []; // 点数計算のため.
 
   void selectMeldOnChanged(int i) { //AgariTilesに描画する関数
+
     setState(() {
       _selectMeld = i;
 
@@ -108,7 +115,6 @@ class _PageAState extends State<PageA> {
           final key0 = (_selectType, _selectTile);
           final key1 = (_selectType, _selectTile + 1);
           final key2 = (_selectType, _selectTile + 2);
-          
 
           if (_selectType == 3) {break;} // 字牌なら.
           if (_selectTile > 6) {break;} // 数牌が７以上なら.
@@ -120,17 +126,18 @@ class _PageAState extends State<PageA> {
            || _bufAgari.where((e) => e == key1).length + 1 > 4
            || _bufAgari.where((e) => e == key2).length + 1 > 4) {break;}
 
-
-          _bufBrock.addAll([key0, key1, key2]); // 戻るボタンに渡す _bufBrock.
+          _bufMenzen.addAll([key0, key1, key2]); // 戻るボタンに渡す _bufMenzen.
           _bufAgari.addAll([key0, key1, key2]); // ４枚以上にならないように管理する _bufAgari.
           _menzen.setRange( // AgariTileに渡す _menzen に追加.
             _countMenzen, _countMenzen+3,
             [tiles[_selectTile], tiles[_selectTile+1], tiles[_selectTile+2]]
-          ); 
+          );
+
+          _agariCal.add((key0, _selectMeld)); // 点数計算用.
 
           _countMenzen+=3;
           _countBrock++;
-          _recordPushMeldType.add(0);
+          _recordPushMeldType.add(_selectMeld);
           break;
         }
 
@@ -138,24 +145,24 @@ class _PageAState extends State<PageA> {
 
           final key = (_selectType, _selectTile);
 
-
           if (_countToitsu > 1) {break;} // 対子が２組以上なら.
           if ( _countBrock > 3) {break;} // 刻子が４組以上なら.
 
           // ( length + 増える数 > 4 )同一牌が４枚以上なら.
           if (_bufAgari.where((e) => e == key).length + 3 > 4) {break;}
           
-          
-          _bufBrock.addAll([key, key, key]); // 戻るボタンに渡す _bufBrock.
+          _bufMenzen.addAll([key, key, key]); // 戻るボタンに渡す _bufMenzen.
           _bufAgari.addAll([key, key, key]); // ４枚以上にならないように管理する _bufAgari.
           _menzen.setRange( // AgariTileに渡す _menzen に追加.
             _countMenzen, _countMenzen+3,
             [tiles[_selectTile], tiles[_selectTile], tiles[_selectTile]]
           );
 
+          _agariCal.add((key, _selectMeld)); // 点数計算用.
+
           _countMenzen+=3;
           _countBrock++;
-          _recordPushMeldType.add(1);
+          _recordPushMeldType.add(_selectMeld);
           break;
         }
 
@@ -165,7 +172,6 @@ class _PageAState extends State<PageA> {
           final key1 = (_selectType, _selectTile + 1);
           final key2 = (_selectType, _selectTile + 2);
           
-
           if (_selectType == 3) {break;} // 字牌なら.
           if (_selectTile > 6) {break;} // 数牌が７以上なら.
           if (_countToitsu > 1) {break;} // 対子が２組以上なら.
@@ -176,7 +182,6 @@ class _PageAState extends State<PageA> {
            || _bufAgari.where((e) => e == key1).length + 1 > 4
            || _bufAgari.where((e) => e == key2).length + 1 > 4) {break;}
 
-
           _bufAgari.addAll([key0, key1, key2]); // ４枚以上にならないように管理する _bufAgari.
           _menzen.removeRange(_menzen.length-3, _menzen.length); // AgariTileに渡す _menzen を１ブロックにつき３枚削除.
           _huro.addAll([// AgariTileに渡す _huro に追加.
@@ -185,9 +190,11 @@ class _PageAState extends State<PageA> {
             SizedBox(width: 60)
           ]);
 
+          _agariCal.add((key0, _selectMeld)); // 点数計算用.
+
           _countHuro++;
           _countBrock++;
-          _recordPushMeldType.add(2);
+          _recordPushMeldType.add(_selectMeld);
           break;
         }
 
@@ -195,13 +202,11 @@ class _PageAState extends State<PageA> {
 
           final key = (_selectType, _selectTile);
 
-
           if (_countToitsu > 1) {break;} // 対子が２組以上なら.
           if ( _countBrock > 3) {break;} // 刻子が４組以上なら.
 
           // ( length + 増える数 > 4 )同一牌が４枚以上なら.
           if (_bufAgari.where((e) => e == key).length + 3 > 4) {break;}
-
 
           _bufAgari.addAll([key, key, key]); // ４枚以上にならないように管理する _bufAgari.
           _menzen.removeRange(_menzen.length-3, _menzen.length); // AgariTileに渡す _menzen を１ブロックにつき３枚削除.
@@ -210,10 +215,12 @@ class _PageAState extends State<PageA> {
             Huro(typeIndex: _selectType, tileIndex: _selectTile, meldIndex: _selectMeld),
             SizedBox(width: 55)
           ]);
-          
+
+          _agariCal.add((key, _selectMeld)); // 点数計算用.
+
           _countHuro++;
           _countBrock++;
-          _recordPushMeldType.add(3);
+          _recordPushMeldType.add(_selectMeld);
           break;
         }
 
@@ -221,13 +228,11 @@ class _PageAState extends State<PageA> {
 
           final key = (_selectType, _selectTile);
 
-
           if (_countToitsu > 1) {break;} // 対子が２組以上なら.
           if ( _countBrock > 3) {break;} // 刻子が４組以上なら.
 
           // ( length + 増える数 > 4 )同一牌が４枚以上なら.
           if (_bufAgari.where((e) => e == key).length + 4 > 4) {break;}
-
 
           _bufAgari.addAll([key, key, key, key]); // ４枚以上にならないように管理する _bufAgari.
           _menzen.removeRange(_menzen.length-3, _menzen.length); // AgariTileに渡す _menzen を１ブロックにつき３枚削除.
@@ -237,9 +242,11 @@ class _PageAState extends State<PageA> {
             SizedBox(width: 90)
           ]);
 
+          _agariCal.add((key, _selectMeld)); // 点数計算用.
+
           _countHuro++;
           _countBrock++;
-          _recordPushMeldType.add(4);
+          _recordPushMeldType.add(_selectMeld);
           break;
         }
 
@@ -247,13 +254,11 @@ class _PageAState extends State<PageA> {
 
           final key = (_selectType, _selectTile);
 
-
           if (_countToitsu > 1) {break;} // 対子が２組以上なら.
           if ( _countBrock > 3) {break;} // 刻子が４組以上なら.
 
           // ( length + 増える数 > 4 )同一牌が４枚以上なら.
           if (_bufAgari.where((e) => e == key).length + 4 > 4) {break;}
-
 
           _bufAgari.addAll([key, key, key, key]); // ４枚以上にならないように管理する _bufAgari.
           _menzen.removeRange(_menzen.length-3, _menzen.length); // AgariTileに渡す _menzen を１ブロックにつき３枚削除.
@@ -263,16 +268,18 @@ class _PageAState extends State<PageA> {
             SizedBox(width: 100)
           ]);
 
+          _agariCal.add((key, _selectMeld));
+
           _countHuro++;
           _countBrock++;
-          _recordPushMeldType.add(5);
+          _recordPushMeldType.add(_selectMeld);
           break;
         }
+
         case 6: { // 対子.
 
           final key = (_selectType, _selectTile); 
           bool accepted = false;
-
 
           if (_countToitsu == 7) {break;} // 対子が７組なら.
           if (_bufAgari.where((e) => e == key).length + 2 > 4) {break;} // ( where.length + 増える数 > 4 )同一牌が４枚以上なら.
@@ -318,14 +325,15 @@ class _PageAState extends State<PageA> {
             }
           }
 
-
           if (accepted) {
+            _bufAgari.addAll([key, key]); // ４枚以上にならないように管理する _bufAgari.
+            _bufMenzen.addAll([key, key]); // 戻るボタンに渡す _bufMenzen.
+
+            _agariCal.add((key, _selectMeld));
+
             _countMenzen+=2;
             _countToitsu++;
-
-            _bufBrock.addAll([key, key]); // 戻るボタンに渡す _bufBrock.
-            _bufAgari.addAll([key, key]); // ４枚以上にならないように管理する _bufAgari.
-            _recordPushMeldType.add(6); // 戻るボタンに渡す _recordPushMeldType.
+            _recordPushMeldType.add(_selectMeld);
           }
           break;
         }
@@ -338,10 +346,10 @@ class _PageAState extends State<PageA> {
       }
 
       // print("_bufAgari: $_bufAgari");
+      // print("_bufMenzen: $_bufMenzen");
       // print("_menzen: $_menzen");
       // print("_huro: $_huro");
       // print("_recordPushMeldType: $_recordPushMeldType");
-
 
     });
   }
@@ -350,8 +358,8 @@ class _PageAState extends State<PageA> {
 
 
   void onPressedTsumo() {
-    if(_bufBrock.length + _huro.length < 14) {return;} // 上がれる形じゃなければ.
-    if(_countPushTsumoRon > 0) {return;} // 一度ツモかロンを押していたら.
+    if(_bufMenzen.length + _huro.length < 14) {return;} // 上がれる形じゃなければ.
+    if(_flagRon || _flagTsumo) {return;} // 一度ツモかロンを押していたら.
     
     List<Widget> tiles(int t) =>
         (t == 0) ? manzu
@@ -359,16 +367,16 @@ class _PageAState extends State<PageA> {
       : (t == 2) ? souzu
       : zihai;
 
-    _bufBrock.sort((a, b) {
+    _bufMenzen.sort((a, b) {
       int buf = a.$1.compareTo(b.$1);
       return buf != 0 ? buf : a.$2.compareTo(b.$2);
     });
 
     _menzenRecord = _menzen;
-    _countPushTsumoRon++;
+    _flagTsumo = true;
     
     setState(() {
-      _menzen = _bufBrock.map((i) => tiles(i.$1)[i.$2]).toList();
+      _menzen = _bufMenzen.map((i) => tiles(i.$1)[i.$2]).toList();
     });
 
     // print("_R: $_menzenRecord");
@@ -379,29 +387,31 @@ class _PageAState extends State<PageA> {
 
 
   void onPressedRon() {
-    if(_bufBrock.length + _huro.length < 14) {return;} // 上がれる形じゃなければ.
-    if(_countPushTsumoRon > 0) {return;} // 一度ツモかロンを押していたら.
+    if(_bufMenzen.length + _huro.length < 14) {return;} // 上がれる形じゃなければ.
+    if(_flagRon || _flagTsumo) {return;} // 一度ツモかロンを押していたら.
     
     List<Widget> tiles(int t) =>
         (t == 0) ? manzu
       : (t == 1) ? pinzu
       : (t == 2) ? souzu
       : zihai;
-    // print("_bufBrock: $_bufBrock");
+    // print("_bufMenzen: $_bufMenzen");
 
-    final sorted = _bufBrock.toList() // 参照渡しにならないように！コピー.
+    final sorted = _bufMenzen.toList() // 参照渡しにならないように！コピー.
     ..sort((a, b) {
       int buf = a.$1.compareTo(b.$1);
       return buf != 0 ? buf : a.$2.compareTo(b.$2);
     });
 
     _menzenRecord = _menzen;
-    _countPushTsumoRon++;
+    _flagRon = true;
     
     setState(() {
       _menzen = sorted.map((i) => tiles(i.$1)[i.$2]).toList();
     });
-    // print("_bufBrock: $_bufBrock");
+
+
+    // print("_bufMenzen: $_bufMenzen");
     // print("soreted: $sorted");
 
     // print("_R: $_menzenRecord");
@@ -413,8 +423,14 @@ class _PageAState extends State<PageA> {
 
   void onPressedModoru() { 
     if (_bufAgari.length == 0) {return;} // SelectMeld が何も選択されていなければ.
-    if (_countPushTsumoRon == 1) { // 上がれる形なら.
-      _countPushTsumoRon--;
+    if (_flagCal) {
+      _flagCal = false;
+      setState(() => _labelCal = "計算");
+      return;
+      }
+    if (_flagRon || _flagTsumo) { // 上がれる形なら.
+      _flagRon = false;
+      _flagTsumo = false;
       setState(() {
         _menzen = _menzenRecord;  
       });
@@ -424,8 +440,10 @@ class _PageAState extends State<PageA> {
       setState(() {
         _menzen.removeRange(_countMenzen-3, _countMenzen);
         _menzen.addAll([back, back, back]);
-        _bufBrock.removeRange(_bufBrock.length-3, _bufBrock.length);
+        _bufMenzen.removeRange(_bufMenzen.length-3, _bufMenzen.length);
         _bufAgari.removeRange(_bufAgari.length-3, _bufAgari.length);
+
+        _agariCal.removeLast();
 
         _countMenzen-=3;
         _countBrock--;
@@ -435,8 +453,10 @@ class _PageAState extends State<PageA> {
       setState(() {
         _menzen.removeRange(_countMenzen-3, _countMenzen);
         _menzen.addAll([back, back, back]);
-        _bufBrock.removeRange(_bufBrock.length-3, _bufBrock.length);
+        _bufMenzen.removeRange(_bufMenzen.length-3, _bufMenzen.length);
         _bufAgari.removeRange(_bufAgari.length-3, _bufAgari.length);
+
+        _agariCal.removeLast();
 
         _countMenzen-=3;
         _countBrock--;
@@ -448,6 +468,8 @@ class _PageAState extends State<PageA> {
         _menzen.addAll([back, back, back]);
         _bufAgari.removeRange(_bufAgari.length-3, _bufAgari.length);
 
+        _agariCal.removeLast();
+
         _countHuro--;
         _countBrock--;
         _recordPushMeldType.removeLast();
@@ -457,6 +479,8 @@ class _PageAState extends State<PageA> {
         _huro.removeRange(_huro.length-3, _huro.length);
         _menzen.addAll([back, back, back]);
         _bufAgari.removeRange(_bufAgari.length-3, _bufAgari.length);
+
+        _agariCal.removeLast();
 
         _countHuro--;
         _countBrock--;
@@ -468,6 +492,8 @@ class _PageAState extends State<PageA> {
         _menzen.addAll([back, back, back]);
         _bufAgari.removeRange(_bufAgari.length-4, _bufAgari.length);
 
+        _agariCal.removeLast();
+
         _countHuro--;
         _countBrock--;
         _recordPushMeldType.removeLast();
@@ -478,6 +504,8 @@ class _PageAState extends State<PageA> {
         _menzen.addAll([back, back, back]);
         _bufAgari.removeRange(_bufAgari.length-4, _bufAgari.length);
 
+        _agariCal.removeLast();
+
         _countHuro--;
         _countBrock--;
         _recordPushMeldType.removeLast();
@@ -486,9 +514,11 @@ class _PageAState extends State<PageA> {
       setState(() {
         _menzen.removeRange(_countMenzen-2, _countMenzen);
         _menzen.addAll([back, back]);
-        _bufBrock.removeRange(_bufBrock.length-2, _bufBrock.length);
+        _bufMenzen.removeRange(_bufMenzen.length-2, _bufMenzen.length);
         _bufAgari.removeRange(_bufAgari.length-2, _bufAgari.length);
         _bufToitsu.removeLast();
+
+        _agariCal.removeLast();
 
         _countMenzen-=2;
         _countToitsu--;
@@ -505,7 +535,12 @@ class _PageAState extends State<PageA> {
 
 
 
-  void onPressedOkuru() {}
+  void onPressedOkuru() {
+    if (!_flagCal && (_flagRon || _flagTsumo)) {
+      _flagCal = true;
+      setState(() => _labelCal = "送る");
+    }
+  }
 
   Widget _test = Text("test");
 
@@ -552,7 +587,12 @@ class _PageAState extends State<PageA> {
             child: Column(children: [
               Expanded(flex: 3,
                 child: BoxB("Score", child:
-                  Score()
+                  Score(
+                    agariCal: _agariCal,
+                    flagRon: _flagRon,
+                    flagTsumo: _flagTsumo,
+                    flagCal: _flagCal,
+                  )
                 )
               ),
               Expanded(flex: 1,
@@ -561,7 +601,8 @@ class _PageAState extends State<PageA> {
                     onPressedTsumo: onPressedTsumo,
                     onPressedRon: onPressedRon,
                     onPressedModoru: onPressedModoru,
-                    onPressedOkuru: onPressedModoru,
+                    onPressedOkuru: onPressedOkuru,
+                    label: _labelCal
                   )
                 )
               )

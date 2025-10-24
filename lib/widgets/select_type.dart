@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mahjong/images.dart';
-import 'package:mahjong/page_a/option_button.dart';
-import 'package:mahjong/page_a/select_tiles.dart';
+import 'package:mahjong/data/images.dart';
+import 'package:mahjong/widgets/option_button.dart';
+import 'package:mahjong/widgets/select_tiles.dart';
 
 
 class SelectType extends StatelessWidget {

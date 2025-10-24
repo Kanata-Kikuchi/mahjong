@@ -36,7 +36,7 @@ class BoxB extends StatelessWidget {
     const double horizontal = 10;
     const double vertical = 20;
     
-    Widget _test = ColoredBox(color: Colors.black, child: child,);
+    Widget _test = ColoredBox(color: Colors.lightBlue, child: child,);
 
     return Stack(
       clipBehavior: Clip.none,

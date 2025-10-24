@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mahjong/images.dart';
-import 'package:mahjong/page_a/meld_tiles.dart';
+import 'package:mahjong/data/images.dart';
+import 'package:mahjong/models/meld_tiles.dart';
 
 class AgariTiles extends StatelessWidget {
   AgariTiles({required this.brockTiles, required this.huroTiles, super.key});

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mahjong/images.dart';
+import 'package:mahjong/data/images.dart';
 
 class SelectTiles extends StatelessWidget {
   SelectTiles({required this.typeIndex, required this.onChanged, super.key});

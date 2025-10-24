@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mahjong/page_a/option_button.dart';
+import 'package:mahjong/widgets/option_button.dart';
 
 
 class SelectOption extends StatelessWidget {
@@ -8,6 +8,7 @@ class SelectOption extends StatelessWidget {
     required this.onPressedRon,
     required this.onPressedModoru,
     required this.onPressedOkuru,
+    required this.label,
     super.key
   });
 
@@ -15,6 +16,7 @@ class SelectOption extends StatelessWidget {
   VoidCallback onPressedRon;
   VoidCallback onPressedModoru;
   VoidCallback onPressedOkuru;
+  String label;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +48,7 @@ class SelectOption extends StatelessWidget {
       Expanded(
         child: OptionButton(
           onPressed: onPressedOkuru,
-          child: SizedBox(height: 100, child: Center(child: Text("転送")))
+          child: SizedBox(height: 100, child: Center(child: Text(label)))
         )
       ),
     ]);
