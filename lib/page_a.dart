@@ -279,7 +279,6 @@ class _PageAState extends State<PageA> {
         case 6: { // 対子.
 
           final key = (_selectType, _selectTile); 
-          bool accepted = false;
 
           if (_countToitsu == 7) {break;} // 対子が７組なら.
           if (_bufAgari.where((e) => e == key).length + 2 > 4) {break;} // ( where.length + 増える数 > 4 )同一牌が４枚以上なら.
@@ -306,26 +305,7 @@ class _PageAState extends State<PageA> {
           if (_countToitsu == 0) {
             _menzen.setRange(_countMenzen, _countMenzen+2, [tiles[_selectTile], tiles[_selectTile]]);
             _bufToitsu.add(key);
-            accepted = true;
-          }
-          //手牌が８枚の時に[３, ３, ２]と[２, ２, ２, ２]のパターンがあり、後者の対子手だけ通す.
-          else if (_countMenzen == 8 && _countToitsu == 4) {
-            if (!_bufToitsu.contains(key)) {
-              _menzen.setRange(_countMenzen, _countMenzen+2, [tiles[_selectTile], tiles[_selectTile]]);
-              _bufToitsu.add(key);
-              accepted = true;
-            }
-          }
-          //対子手で、副露がなくて.
-          else if (_countToitsu < 7 && _countHuro == 0) {
-            if (!_bufToitsu.contains(key)) {
-              _menzen.setRange(_countMenzen, _countMenzen+2, [tiles[_selectTile], tiles[_selectTile]]);
-              _bufToitsu.add(key);
-              accepted = true;
-            }
-          }
 
-          if (accepted) {
             _bufAgari.addAll([key, key]); // ４枚以上にならないように管理する _bufAgari.
             _bufMenzen.addAll([key, key]); // 戻るボタンに渡す _bufMenzen.
 
@@ -335,6 +315,42 @@ class _PageAState extends State<PageA> {
             _countToitsu++;
             _recordPushMeldType.add(_selectMeld);
           }
+
+          if (_recordPushMeldType.toSet().length == 1) { // 対子以外が選ばれていなければ.
+            //手牌が８枚の時に[３, ３, ２]と[２, ２, ２, ２]のパターンがあり、後者の対子手だけ通す.
+            if (_countMenzen == 8 && _countToitsu == 4) {
+              if (!_bufToitsu.contains(key)) {
+                _menzen.setRange(_countMenzen, _countMenzen+2, [tiles[_selectTile], tiles[_selectTile]]);
+                _bufToitsu.add(key);
+
+                _bufAgari.addAll([key, key]); // ４枚以上にならないように管理する _bufAgari.
+                _bufMenzen.addAll([key, key]); // 戻るボタンに渡す _bufMenzen.
+
+                _agariCal.add((key, _selectMeld));
+
+                _countMenzen+=2;
+                _countToitsu++;
+                _recordPushMeldType.add(_selectMeld);
+              }
+            }
+            //対子手で、副露がなくて.
+            else if (_countToitsu < 7 && _countHuro == 0) {
+              if (!_bufToitsu.contains(key)) {
+                _menzen.setRange(_countMenzen, _countMenzen+2, [tiles[_selectTile], tiles[_selectTile]]);
+                _bufToitsu.add(key);
+
+                _bufAgari.addAll([key, key]); // ４枚以上にならないように管理する _bufAgari.
+                _bufMenzen.addAll([key, key]); // 戻るボタンに渡す _bufMenzen.
+
+                _agariCal.add((key, _selectMeld));
+
+                _countMenzen+=2;
+                _countToitsu++;
+                _recordPushMeldType.add(_selectMeld);
+              }
+            }
+          }
+
           break;
         }
 
@@ -397,8 +413,8 @@ class _PageAState extends State<PageA> {
       : zihai;
     // print("_bufMenzen: $_bufMenzen");
 
-    final sorted = _bufMenzen.toList() // 参照渡しにならないように！コピー.
-    ..sort((a, b) {
+    final sorted = _bufMenzen.toList(); // 参照渡しにならないように！コピー.
+    sorted.sort((a, b) {
       int buf = a.$1.compareTo(b.$1);
       return buf != 0 ? buf : a.$2.compareTo(b.$2);
     });
@@ -589,6 +605,7 @@ class _PageAState extends State<PageA> {
                 child: BoxB("Score", child:
                   Score(
                     agariCal: _agariCal,
+                    bufAgari: _bufAgari,
                     flagRon: _flagRon,
                     flagTsumo: _flagTsumo,
                     flagCal: _flagCal,

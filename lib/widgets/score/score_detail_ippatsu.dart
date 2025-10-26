@@ -23,15 +23,7 @@ class ScoreOptionIppatsu extends StatelessWidget {
             value: enabled ? value : false,
             onChanged: enabled ? onChanged : null, // 無効時は押せない
           ),
-          const Text('一発'),
-          if (!enabled)
-            const Padding(
-              padding: EdgeInsets.only(left: 6),
-              child: Text(
-                '※リーチ時のみ',
-                style: TextStyle(fontSize: 12, color: Colors.grey),
-              ),
-            ),
+          const Text('一発')
         ],
       ),
     );

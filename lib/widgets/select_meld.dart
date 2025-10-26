@@ -15,7 +15,7 @@ class SelectMeld extends StatelessWidget {
 
   final int typeIndex;
   final int tileIndex;
-  final void Function(int) onChanged;
+  final ValueChanged<int> onChanged;
 
   @override
   Widget build(BuildContext context) {

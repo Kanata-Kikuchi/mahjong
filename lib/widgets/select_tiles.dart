@@ -75,7 +75,7 @@ class SelectTiles extends StatelessWidget {
             magnification: 1.1, //拡大比率.
             overAndUnderCenterOpacity: 0.4, //端の透明度.
             onSelectedItemChanged: (i) => onChanged(i),
-            children: tiles.map((buf) => RotatedBox(quarterTurns: 1, child: buf)).toList(),
+            children: tiles.map((m) => RotatedBox(quarterTurns: 1, child: m)).toList(),
           );
         },
       )

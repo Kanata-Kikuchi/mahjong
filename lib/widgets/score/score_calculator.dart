@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mahjong/data/yaku_list.dart';
+import 'package:mahjong/models/score_detail.dart';
 import 'package:mahjong/models/yaku.dart';
 
 class ScoreCalculator extends StatelessWidget {
   ScoreCalculator({
+    required this.agariCal,
     required this.flagRon,
     required this.flagTsumo,
-    required this.agariCal,
+    required this.flagNaki,
+    required this.detail,
+    required this.agarihai,
+    required this.agariDetail,
     super.key
   }) {
     yakuFlag = {
@@ -103,8 +108,13 @@ class ScoreCalculator extends StatelessWidget {
       "七対子": agariCal.length == 7,
       "二盃口": (() {
         final melds = agariCal.where((w) => w.$2 == 0); // 順子で.
-        if (melds.toSet().length == 1) {return true;} // 全てが同一の順子なら.
-        return melds.toSet().length == melds.length - 2; // toSet()で個数が2減れば.
+        if (melds.length != 4) {return false;}
+        final typeTile = melds.map((m) => (m.$1.$1, m.$1.$2)).toList();
+        if (typeTile.every((e) => e == typeTile.first)) {return true;} // 全てが同一なら.
+        final tileStart = typeTile.toSet().toList();
+        return tileStart.length == 2
+            && typeTile.where((e) => e == tileStart[0]).length == 2
+            && typeTile.where((e) => e == tileStart[1]).length == 2;
       })(),
       "混一色": (() {
         final types = agariCal.map((m) => m.$1.$1).toSet(); // typeで.
@@ -130,16 +140,20 @@ class ScoreCalculator extends StatelessWidget {
     };
   }
 
+  final List<((int type, int tile), int meld)> agariCal;
   bool flagRon;
   bool flagTsumo;
-  final List<((int type, int tile), int meld)> agariCal;
+  bool flagNaki;
+  ScoreDetail detail;
+  List<(int type, int tile)> agarihai;
+  int? agariDetail;
 
   // 深いコピー.
   final List<Yaku> yaku = yakuList
       .map((y) => Yaku(
         name: y.name,
         hanClosed: y.hanClosed,
-        hanOpen: y.hanOpen,
+        hanOpened: y.hanOpened,
         selected: false
       ))
       .toList();
@@ -149,92 +163,256 @@ class ScoreCalculator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    List<Yaku> agariYaku = [];
-
-    if (yakuFlag["七対子"] ?? false) {
-      agariYaku.add(yaku.firstWhere((i) => i.name == "七対子"));
+    if (yakuFlag["七対子"] ?? false) { // ７ブロック.
+      yaku.firstWhere((i) => i.name == "七対子").selected = true;
       if (yakuFlag["断么九"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "断么九"));
+        yaku.firstWhere((i) => i.name == "断么九").selected = true;
       }
       if (yakuFlag["全帯么"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "全帯么"));
+        yaku.firstWhere((i) => i.name == "全帯么").selected = true;
       }
       if (yakuFlag["混老頭"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "混老頭"));
+        yaku.firstWhere((i) => i.name == "混老頭").selected = true;
       }
       if (yakuFlag["混一色"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "混一色"));
+        yaku.firstWhere((i) => i.name == "混一色").selected = true;
       }
       if (yakuFlag["純全帯么九"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "純全帯么九"));
+        yaku.firstWhere((i) => i.name == "純全帯么九").selected = true;
       }
       if (yakuFlag["清一色"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "清一色"));
+        yaku.firstWhere((i) => i.name == "清一色").selected = true;
       }
-    } else {
+    } else { // ５ブロック.
       if (yakuFlag["平和"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "平和"));
+        yaku.firstWhere((i) => i.name == "平和").selected = true;
       }
       if (yakuFlag["断么九"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "断么九"));
+        yaku.firstWhere((i) => i.name == "断么九").selected = true;
       }
       if (yakuFlag["役牌"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "役牌"));
+        yaku.firstWhere((i) => i.name == "役牌").selected = true;
       }
       if (yakuFlag["一盃口"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "一盃口"));
+        yaku.firstWhere((i) => i.name == "一盃口").selected = true;
       }
       if (yakuFlag["三色同順"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "三色同順"));
+        yaku.firstWhere((i) => i.name == "三色同順").selected = true;
       }
       if (yakuFlag["三色同刻"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "三色同刻"));
+        yaku.firstWhere((i) => i.name == "三色同刻").selected = true;
       }
       if (yakuFlag["一気通貫"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "一気通貫"));
+        yaku.firstWhere((i) => i.name == "一気通貫").selected = true;
       }
       if (yakuFlag["対々和"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "対々和"));
+        yaku.firstWhere((i) => i.name == "対々和").selected = true;
       }
       if (yakuFlag["三暗刻"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "三暗刻"));
+        yaku.firstWhere((i) => i.name == "三暗刻").selected = true;
       }
       if (yakuFlag["三槓子"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "三槓子"));
+        yaku.firstWhere((i) => i.name == "三槓子").selected = true;
       }
       if (yakuFlag["全帯么"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "全帯么"));
+        yaku.firstWhere((i) => i.name == "全帯么").selected = true;
       }
       if (yakuFlag["混老頭"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "混老頭"));
+        yaku.firstWhere((i) => i.name == "混老頭").selected = true;
       }
       if (yakuFlag["小三元"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "小三元"));
+        yaku.firstWhere((i) => i.name == "小三元").selected = true;
       }
       if (yakuFlag["二盃口"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "二盃口"));
+        yaku.firstWhere((i) => i.name == "二盃口").selected = true;
       }
       if (yakuFlag["混一色"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "混一色"));
+        yaku.firstWhere((i) => i.name == "混一色").selected = true;
       }
       if (yakuFlag["純全帯么九"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "純全帯么九"));
+        yaku.firstWhere((i) => i.name == "純全帯么九").selected = true;
       }
       if (yakuFlag["清一色"] ?? false) {
-        agariYaku.add(yaku.firstWhere((i) => i.name == "清一色"));
+        yaku.firstWhere((i) => i.name == "清一色").selected = true;
       }
     }
-    
-    
-    List<String> test = agariYaku.map((m) => m.name).toList();
 
-    return Center(
-      child: Text(
-        "agariYaku : $test",
-        style: TextStyle(fontSize: 16, color: Colors.red),
+    List<int> yakuOpened = []; // 翻数の計算に使う.
+    List<int> yakuColsed = []; // 翻数の計算に使う.
+    int sumHanScore = 0;
+    int sumFuScore = 0;
+    bool flagYakunashi = false;
+
+    // 翻数計算.
+    if (flagNaki) { // 鳴き.
+      yakuOpened = yaku
+          .where((w) => w.selected == true)
+          .map((m) => m.hanOpened)
+          .toList();
+
+      if (flagRon) { // ロンなら.
+        if (detail.ron == 1) { // 河底.
+          yaku.firstWhere((i) => i.name == "河底").selected = true;
+          yakuOpened.add(1);
+        } else if (detail.ron == 2) { // 槍槓.
+          yaku.firstWhere((i) => i.name == "槍槓").selected = true;
+          yakuOpened.add(1);
+        }
+      } else if (flagTsumo) { // ツモなら.
+        if (detail.tsumo == 1) { // 海底.
+          yaku.firstWhere((i) => i.name == "海底").selected = true;
+          yakuOpened.add(1);
+        } else if (detail.tsumo == 2) { // 嶺上開花.
+          yaku.firstWhere((i) => i.name == "嶺上開花").selected = true;
+          yakuOpened.add(1);
+        }
+      }
+
+      if (yaku.where((w) => w.selected == true).length == 0) { // 役無しチェック.
+        flagYakunashi = true;
+      }
+
+      if (!flagYakunashi && detail.dora != 0) { // ドラ.
+        yaku.firstWhere((i) => i.name == "ドラ").selected = true;
+        yaku.firstWhere((i) => i.name == "ドラ").hanOpened = detail.dora;
+        yakuOpened.add(detail.dora);
+      }
+
+      sumHanScore = yakuOpened.fold(0, (s, f) => s + f); // 合計翻数.
+    }
+    else if (!flagNaki) { // 面前.
+      yakuColsed = yaku
+          .where((w) => w.selected == true)
+          .map((m) => m.hanClosed)
+          .toList();
+
+      if (detail.reach == 1) { // リーチ.
+        yaku.firstWhere((i) => i.name == "リーチ").selected = true;
+        yakuColsed.add(1);
+      } else if (detail.reach == 2) { // ダブリー.
+        yaku.firstWhere((i) => i.name == "ダブルリーチ").selected = true;
+        yakuColsed.add(2);
+      }
+
+      if (flagRon) { // ロンなら.
+        if (detail.ron == 1) { // 河底.
+          yaku.firstWhere((i) => i.name == "河底").selected = true;
+          yakuColsed.add(1);
+        } else if (detail.ron == 2) { // 槍槓.
+          yaku.firstWhere((i) => i.name == "槍槓").selected = true;
+          yakuColsed.add(1);
+        }
+      } else if (flagTsumo) { // ツモなら.
+        if (detail.tsumo == 1) { // 海底.
+          yaku.firstWhere((i) => i.name == "海底").selected = true;
+          yakuColsed.add(1);
+        } else if (detail.tsumo == 2) { // 嶺上開花.
+          yaku.firstWhere((i) => i.name == "嶺上開花").selected = true;
+          yakuColsed.add(1);
+        }
+      }
+
+      if (detail.ippatsu) { // 一発.
+        yaku.firstWhere((i) => i.name == "一発").selected = true;
+        yakuColsed.add(1);
+      }
+
+      if (yaku.where((w) => w.selected == true).length == 0) { // 役無しチェック.
+        flagYakunashi = true;
+      }
+
+      if (!flagYakunashi && detail.dora != 0) { // ドラ.
+        yaku.firstWhere((i) => i.name == "ドラ").selected = true;
+        yaku.firstWhere((i) => i.name == "ドラ").hanClosed = detail.dora;
+        yakuColsed.add(detail.dora);
+      }
+
+      sumHanScore = yakuColsed.fold(0, (s, f) => s + f); // 合計翻数.
+    }
+
+    // 符計算.
+    if (flagNaki) { // 鳴き.
+
+      agarihai[agariDetail!];
+
+      sumFuScore += 20;
+      if (flagTsumo) {sumFuScore += 2;}
+      final scoreMeld = agariCal
+          .map((m) => m.$2)
+          .toList();
+      
+    }
+    else if (!flagNaki) { // 面前.
+
+    }
+
+    
+
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "役一覧",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 8),
+          flagYakunashi
+          ? Text(
+            "役無し",
+            style: TextStyle(fontSize: 18, color: Colors.black54)
+            )
+          : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: yaku
+                .where((w) => w.selected)
+                .map((m) => Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: Text(
+                        m.name,
+                        style: TextStyle(fontSize: 16),
+                      )
+                    ),
+                    flagNaki // 鳴きか面前か.
+                      ? Expanded(
+                          flex: 1,
+                          child: Text(
+                            "${m.hanOpened} 翻",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 14),
+                          )
+                        )
+                      : Expanded(
+                          flex: 1,
+                          child: Text(
+                            "${m.hanClosed} 翻",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 14),
+                          )
+                        )
+                  ],
+                ))
+                .toList(),
+          ),
+          Divider(height: 24),
+          Text(
+            "点数",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 8),
+          Text(
+            flagYakunashi // 鳴きか面前か.
+              ? "役無し"
+              : "8000 点 $sumHanScore 翻 40 符",
+            style: TextStyle(fontSize: 18, color: Colors.black54),
+          ),
+        ],
       ),
     );
   }
 }
-
 
