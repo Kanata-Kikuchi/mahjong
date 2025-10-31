@@ -2,7 +2,8 @@ class ScoreDetail {
   final int reach;
   final int tsumo;
   final int ron;
-  final int oyako;
+  final int bakaze;
+  final int zikaze;
   final int dora;
   final bool ippatsu;
   final int? agari;
@@ -11,7 +12,8 @@ class ScoreDetail {
     required this.reach,
     required this.tsumo,
     required this.ron,
-    required this.oyako,
+    required this.bakaze,
+    required this.zikaze,
     required this.dora,
     required this.ippatsu,
     required this.agari

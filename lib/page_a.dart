@@ -316,7 +316,7 @@ class _PageAState extends State<PageA> {
             _recordPushMeldType.add(_selectMeld);
           }
 
-          if (_recordPushMeldType.toSet().length == 1) { // 対子以外が選ばれていなければ.
+          if (_recordPushMeldType.toSet().length == 1 && _countToitsu != 0) { // 対子以外が選ばれていなければ.
             //手牌が８枚の時に[３, ３, ２]と[２, ２, ２, ２]のパターンがあり、後者の対子手だけ通す.
             if (_countMenzen == 8 && _countToitsu == 4) {
               if (!_bufToitsu.contains(key)) {
@@ -371,8 +371,6 @@ class _PageAState extends State<PageA> {
   }
 
 
-
-
   void onPressedTsumo() {
     if(_bufMenzen.length + _huro.length < 14) {return;} // 上がれる形じゃなければ.
     if(_flagRon || _flagTsumo) {return;} // 一度ツモかロンを押していたら.
@@ -398,8 +396,6 @@ class _PageAState extends State<PageA> {
     // print("_R: $_menzenRecord");
     // print(_menzen);
   }
-
-
 
 
   void onPressedRon() {
@@ -433,8 +429,6 @@ class _PageAState extends State<PageA> {
     // print("_R: $_menzenRecord");
     // print(_menzen);
   }
-
-
 
 
   void onPressedModoru() { 
@@ -549,8 +543,6 @@ class _PageAState extends State<PageA> {
   }
 
 
-
-
   void onPressedOkuru() {
     if (!_flagCal && (_flagRon || _flagTsumo)) {
       _flagCal = true;
@@ -601,7 +593,7 @@ class _PageAState extends State<PageA> {
           ),
           Expanded(flex: 2,
             child: Column(children: [
-              Expanded(flex: 3,
+              Expanded(flex: 4,
                 child: BoxB("Score", child:
                   Score(
                     agariCal: _agariCal,

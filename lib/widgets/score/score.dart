@@ -32,27 +32,36 @@ class _ScoreState extends State<Score> {
   int _reachDetail = 0; // 0:なし、1:リーチ、2:ダブリー
   int _tsumoDetail = 0; // 0:なし、1:海底、2:嶺上開花
   int _ronDetail = 0; // 0:なし、1:河底、2:槍槓
-  int _oyakoDetail= 0; // 0:親、1:子.
+  int _bakazeDetail = 0; // 0:東場、1:南場、2:西場.
+  int _oyakoDetail= 0; // 0:東家、1:南家、2:西家、3:北家.
   int _doraDetail = 0; // ドラ枚数.
   bool _ippatsuDetail = false; // 一発の有無.
   bool flagNaki = false;
+  bool flagKan = false;
   int? _agariDetail; // アガリ牌.
-  List<(int type, int tile)> _agarihai = []; // アガリ選択.
+  List<(int type, int tile)> _colectedAgarihai = []; // アガリ選択.
+
+  double sizeBoxSpace = 5;
 
 
 
   @override
   Widget build(BuildContext context) {
 
-    bool flagNaki = widget.agariCal.any((a) { // チー・ポン・明槓があれば.
+    flagNaki = widget.agariCal.any((a) { // チー・ポン・明槓があれば.
       return a.$2 == 2 || a.$2 == 3 || a.$2 ==5;
+    });
+
+    flagKan = widget.agariCal.any((a) { // 槓があれば.
+      return a.$2 == 4 || a.$2 == 5;
     });
 
     final _detail = ScoreDetail(
       reach: _reachDetail,
       tsumo: _tsumoDetail,
       ron: _ronDetail,
-      oyako: _oyakoDetail,
+      bakaze: _bakazeDetail,
+      zikaze: _oyakoDetail,
       dora: _doraDetail,
       ippatsu: _ippatsuDetail,
       agari: _agariDetail
@@ -71,6 +80,10 @@ class _ScoreState extends State<Score> {
 
     void _onChangedRon(int i) {
       setState(() => _ronDetail = i);
+    }
+
+    void _onChangedBakaze(int i) {
+      setState(() => _bakazeDetail = i);
     }
 
     void _onChangedOyako(int i) {
@@ -93,54 +106,84 @@ class _ScoreState extends State<Score> {
       setState(() => _agariDetail = i);
     }
 
-    void _selectedAgari(List<(int type, int tile)> i) {
-      setState(() => _agarihai = i);
+    void _colectedAgari(List<(int type, int tile)> i) {
+      setState(() => _colectedAgarihai = i);
     }
 
     Widget content;
 
     if (widget.flagCal) {
-      content = ScoreCalculator(
-        agariCal: widget.agariCal,
-        flagRon: widget.flagRon,
-        flagTsumo: widget.flagTsumo,
-        flagNaki: flagNaki,
-        detail: _detail,
-        agarihai: _agarihai,
-        agariDetail: _agariDetail
-      );
+      if (_detail.agari == null) {
+        content = Center(
+          child: Text("アガリ牌を選択してください"),
+        );
+      } else {
+        content = ScoreCalculator(
+          agariCal: widget.agariCal,
+          flagRon: widget.flagRon,
+          flagTsumo: widget.flagTsumo,
+          flagNaki: flagNaki,
+          detail: _detail,
+          colectedAgarihai: _colectedAgarihai,
+        );
+      }
     } else if (widget.flagTsumo) { // ツモが押されたら.
       content = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          flagNaki // 鳴いていたら.
+          ? ScoreToggle(
+              title: "リーチ系",
+              label0: "なし",
+              groupValue: _reachDetail,
+              onChanged: _onChangedReach,
+            )
+          : ScoreToggle(
+              title: "リーチ系",
+              label0: "なし",
+              label1: "リーチ",
+              label2: "ダブルリーチ",
+              groupValue: _reachDetail,
+              onChanged: _onChangedReach,
+            ),
+          SizedBox(height: sizeBoxSpace),
+          flagKan // 槓されていたら.
+          ? ScoreToggle(
+              title: "ツモ系",
+              label0: "なし",
+              label1: "海底",
+              label2: "嶺上開花",
+              groupValue: _tsumoDetail,
+              onChanged: _onChangedTsumo,
+            )
+          : ScoreToggle(
+              title: "ツモ系",
+              label0: "なし",
+              label1: "海底",
+              groupValue: _tsumoDetail,
+              onChanged: _onChangedTsumo,
+            ),
+          SizedBox(height: sizeBoxSpace),
           ScoreToggle(
-            title: "リーチ系",
-            label0: "なし",
-            label1: "リーチ",
-            label2: "ダブルリーチ",
-            groupValue: _reachDetail,
-            onChanged: _onChangedReach,
-            flagNaki: flagNaki
+            title: "場風",
+            label0: "東場",
+            label1: "南場",
+            label2: "西場",
+            groupValue: _bakazeDetail,
+            onChanged: _onChangedBakaze
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: sizeBoxSpace),
           ScoreToggle(
-            title: "ツモ系",
-            label0: "なし",
-            label1: "海底",
-            label2: "嶺上開花",
-            groupValue: _tsumoDetail,
-            onChanged: _onChangedTsumo
-          ),
-          const SizedBox(height: 16),
-          ScoreToggle(
-            title: "状況",
-            label0: "親",
-            label1: "子",
+            title: "自風",
+            label0: "東家",
+            label1: "南家",
+            label2: "西家",
+            label3: "北家",
             groupValue: _oyakoDetail,
             onChanged: _onChangedOyako
           ),
-          const SizedBox(height: 16),
-          Text("オプション", style: TextStyle(fontWeight: FontWeight.bold)),
+          SizedBox(height: sizeBoxSpace),
+          Text("オプション", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center, // 縦中央で安定
             children: [
@@ -159,7 +202,7 @@ class _ScoreState extends State<Score> {
                 bufAgari: widget.bufAgari,
                 value: _agariDetail,
                 onChanged: _onChangedAgari,
-                selectedAgari: _selectedAgari
+                colectedAgari: _colectedAgari
               )
             ],
           )
@@ -169,16 +212,22 @@ class _ScoreState extends State<Score> {
       content = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ScoreToggle(
-            title: "リーチ系",
-            label0: "なし",
-            label1: "リーチ",
-            label2: "ダブルリーチ",
-            groupValue: _reachDetail,
-            onChanged: _onChangedReach,
-            flagNaki: flagNaki
-          ),
-          const SizedBox(height: 16),
+          flagNaki
+          ? ScoreToggle(
+              title: "リーチ系",
+              label0: "なし",
+              groupValue: _reachDetail,
+              onChanged: _onChangedReach,
+            )
+          : ScoreToggle(
+              title: "リーチ系",
+              label0: "なし",
+              label1: "リーチ",
+              label2: "ダブルリーチ",
+              groupValue: _reachDetail,
+              onChanged: _onChangedReach,
+            ),
+          SizedBox(height: sizeBoxSpace),
           ScoreToggle(
             title: "ロン系",
             label0: "なし",
@@ -187,15 +236,26 @@ class _ScoreState extends State<Score> {
             groupValue: _ronDetail,
             onChanged: _onChangedRon
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: sizeBoxSpace),
           ScoreToggle(
-            title: "状況",
-            label0: "親",
-            label1: "子",
+            title: "場風",
+            label0: "東場",
+            label1: "南場",
+            label2: "西場",
+            groupValue: _bakazeDetail,
+            onChanged: _onChangedBakaze
+          ),
+          SizedBox(height: sizeBoxSpace),
+          ScoreToggle(
+            title: "自風",
+            label0: "東家",
+            label1: "南家",
+            label2: "西家",
+            label3: "北家",
             groupValue: _oyakoDetail,
             onChanged: _onChangedOyako
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: sizeBoxSpace),
           Text("オプション", style: TextStyle(fontWeight: FontWeight.bold)),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -215,7 +275,7 @@ class _ScoreState extends State<Score> {
                 bufAgari: widget.bufAgari,
                 value: _agariDetail,
                 onChanged: _onChangedAgari,
-                selectedAgari: _selectedAgari
+                colectedAgari: _colectedAgari
               )
             ],
           )
@@ -226,9 +286,11 @@ class _ScoreState extends State<Score> {
       _reachDetail = 0;
       _tsumoDetail = 0;
       _ronDetail = 0;
+      _bakazeDetail = 0;
       _oyakoDetail= 0;
       _doraDetail = 0;
       _ippatsuDetail = false;
+      _agariDetail = null;
 
       content = const Center(
         child: Text(

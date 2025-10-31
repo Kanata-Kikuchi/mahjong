@@ -9,14 +9,23 @@ final List<Yaku> yakuList = [
   Yaku(name: "ツモ",         hanClosed: 1, hanOpened: 0), // 面前のみ.
   Yaku(name: "平和",         hanClosed: 1, hanOpened: 0), // 面前のみ.
   Yaku(name: "断么九",       hanClosed: 1, hanOpened: 1),
-  Yaku(name: "役牌",         hanClosed: 1, hanOpened: 1),
   Yaku(name: "一盃口",       hanClosed: 1, hanOpened: 0), // 面前のみ.
+  Yaku(name: "東",           hanClosed: 1, hanOpened: 1),
+  Yaku(name: "南",           hanClosed: 1, hanOpened: 1),
+  Yaku(name: "西",           hanClosed: 1, hanOpened: 1),
+  Yaku(name: "北",           hanClosed: 1, hanOpened: 1),
+  Yaku(name: "白",           hanClosed: 1, hanOpened: 1),
+  Yaku(name: "発",           hanClosed: 1, hanOpened: 1),
+  Yaku(name: "中",           hanClosed: 1, hanOpened: 1),
   Yaku(name: "嶺上開花",     hanClosed: 1, hanOpened: 1),
   Yaku(name: "槍槓",         hanClosed: 1, hanOpened: 1),
   Yaku(name: "海底",         hanClosed: 1, hanOpened: 1),
   Yaku(name: "河底",         hanClosed: 1, hanOpened: 1),
 
   // 2翻
+  Yaku(name: "ダブ東",       hanClosed: 1, hanOpened: 1),
+  Yaku(name: "ダブ南",       hanClosed: 1, hanOpened: 1),
+  Yaku(name: "ダブ西",       hanClosed: 1, hanOpened: 1),
   Yaku(name: "ダブルリーチ", hanClosed: 2, hanOpened: 0), // 面前のみ.
   Yaku(name: "三色同順",     hanClosed: 2, hanOpened: 1), // 食い下がり.
   Yaku(name: "三色同刻",     hanClosed: 2, hanOpened: 2),

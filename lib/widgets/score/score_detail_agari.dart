@@ -6,14 +6,14 @@ class ScoreOptionAgari extends StatelessWidget {
     required this.bufAgari,
     required this.value,
     required this.onChanged,
-    required this.selectedAgari,
+    required this.colectedAgari,
     super.key
   });
 
   List<(int type, int tile)> bufAgari;
   int? value;
   final ValueChanged<int?> onChanged;
-  final void Function(List<(int type, int tile)>) selectedAgari;
+  final void Function(List<(int type, int tile)>) colectedAgari;
 
   @override
   Widget build(BuildContext context) {
@@ -23,14 +23,14 @@ class ScoreOptionAgari extends StatelessWidget {
       return buf != 0 ? buf : a.$2.compareTo(b.$2);
     });
 
-    final List<(int type, int tile)> backAgarihai = [];
+    final List<(int type, int tile)> bufAgarihai = [];
 
     final List<Widget> agariHai = bufAgari.toSet().map((m) {
       final type = m.$1;
       final tile = m.$2 + 1;
 
       
-        backAgarihai.add((m.$1, m.$2));
+        bufAgarihai.add((m.$1, m.$2));
 
         if (type == 0) {
           return Image.asset(Images.manzu(tile));
@@ -60,7 +60,7 @@ class ScoreOptionAgari extends StatelessWidget {
       items: items,
       alignment: Alignment.center,
       onChanged: (i) {
-        selectedAgari(backAgarihai);
+        colectedAgari(bufAgarihai);
         onChanged(i);
       },
       underline: SizedBox(),

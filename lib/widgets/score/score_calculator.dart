@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mahjong/data/yaku_list.dart';
+import 'package:mahjong/models/meld_tiles.dart';
 import 'package:mahjong/models/score_detail.dart';
 import 'package:mahjong/models/yaku.dart';
 
@@ -10,24 +11,89 @@ class ScoreCalculator extends StatelessWidget {
     required this.flagTsumo,
     required this.flagNaki,
     required this.detail,
-    required this.agarihai,
-    required this.agariDetail,
+    required this.colectedAgarihai,
     super.key
   }) {
-    yakuFlag = {
+    yakuFlag = { // 役ロジック.
+      "ツモ": flagTsumo && !flagNaki,
       "平和": (() {
         final melds = agariCal.map((m) => m.$2).toSet(); // meldでsetを作る.
-        return melds.length == 2 && melds.contains(0); // meld == 0(順子)が含まれて、順子と単騎だけの構成か.
+        if (melds.length == 2 && melds.contains(0)) { // meld == 0(順子)が含まれて、順子と単騎だけの構成か.
+          final keyPinhu = colectedAgarihai[detail.agari!];
+          final startRyanmen = agariCal.where((w) => w.$2 == 0).map((m) => (m.$1.$1, m.$1.$2));
+          final endRyanmen = agariCal.where((w) => w.$2 == 0).map((m) => (m.$1.$1, m.$1.$2 + 2));
+          if (keyPinhu.$2 == 2) { // アガリ牌が３.
+            return startRyanmen.contains(keyPinhu); // ３４５があれば.
+          } else if (keyPinhu.$2 == 6) { // アガリ牌が７.
+            return endRyanmen.contains(keyPinhu); // ５６７があれば.
+          }
+          return startRyanmen.contains(keyPinhu) || endRyanmen.contains(keyPinhu);
+        }
+        return false;
       })(),
       "断么九": agariCal.every((e) {
         if (e.$1.$1 == 3 || e.$1.$2 == 0 || e.$1.$2 == 8) {return false;} // 字牌と1・9スタートは除外.
         if (e.$1.$2 == 6 && (e.$2 == 0 || e.$2 == 2)) {return false;} // 789を除外.
         return true;
       }),
-      "役牌": agariCal.any((a) => a.$1.$1 == 3), // 自風・場風まだ.
       "一盃口": (() {
         final melds = agariCal.where((w) => w.$2 == 0); // 順子で.
         return melds.toSet().length == melds.length - 1; // toSet()で個数が1減れば.
+      })(),
+      "東": (() {
+        final ton = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 0 && w.$2 != 6);
+        if (ton.contains(detail.bakaze)) { // ダブ東回避.
+          return !ton.contains(detail.zikaze);
+        } else if (!ton.contains(detail.bakaze)) {
+          return ton.contains(detail.zikaze);
+        }
+        return false;
+      })(),
+      "南": (() {
+        final nan = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 1 && w.$2 != 6);
+        if (nan.contains(detail.bakaze)) { // ダブ南回避.
+          return !nan.contains(detail.zikaze);
+        } else if (!nan.contains(detail.bakaze)) {
+          return nan.contains(detail.zikaze);
+        }
+        return false;
+      })(),
+      "西": (() {
+        final sya = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 2 && w.$2 != 6);
+        if (sya.contains(detail.bakaze)) { // ダブ西回避.
+          return !sya.contains(detail.zikaze);
+        } else if (!sya.contains(detail.bakaze)) {
+          return sya.contains(detail.zikaze);
+        }
+        return false;
+      })(),
+      "北": (() {
+        final pei = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 3 && w.$2 != 6);
+        return pei.contains(detail.zikaze);
+      })(),
+      "白": (() {
+        final haku = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 4 && w.$2 != 6);
+        return haku.contains(detail.zikaze);
+      })(),
+      "発": (() {
+        final hatsu = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 5 && w.$2 != 6);
+        return hatsu.contains(detail.zikaze);
+      })(),
+      "中": (() {
+        final tyun = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 6 && w.$2 != 6);
+        return tyun.contains(detail.zikaze);
+      })(),
+      "ダブ東": (() {
+        final dabuton = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 0 && w.$2 != 6);
+        return dabuton.contains(detail.bakaze) && dabuton.contains(detail.zikaze);
+      })(),
+      "ダブ南": (() {
+        final dabunan = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 0 && w.$2 != 6);
+        return dabunan.contains(detail.bakaze) && dabunan.contains(detail.zikaze);
+      })(),
+      "ダブ西": (() {
+        final dabusya = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 0 && w.$2 != 6);
+        return dabusya.contains(detail.bakaze) && dabusya.contains(detail.zikaze);
       })(),
       "三色同順": (() {
         final melds = agariCal.where((w) => (w.$2 == 0 || w.$2 == 2)); // 順子とチーで.
@@ -145,8 +211,7 @@ class ScoreCalculator extends StatelessWidget {
   bool flagTsumo;
   bool flagNaki;
   ScoreDetail detail;
-  List<(int type, int tile)> agarihai;
-  int? agariDetail;
+  List<(int type, int tile)> colectedAgarihai;
 
   // 深いコピー.
   final List<Yaku> yaku = yakuList
@@ -163,8 +228,12 @@ class ScoreCalculator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    // 成立役をtrueにする.
     if (yakuFlag["七対子"] ?? false) { // ７ブロック.
       yaku.firstWhere((i) => i.name == "七対子").selected = true;
+      if (yakuFlag["ツモ"] ?? false) {
+        yaku.firstWhere((i) => i.name == "ツモ").selected = true;
+      }
       if (yakuFlag["断么九"] ?? false) {
         yaku.firstWhere((i) => i.name == "断么九").selected = true;
       }
@@ -184,6 +253,9 @@ class ScoreCalculator extends StatelessWidget {
         yaku.firstWhere((i) => i.name == "清一色").selected = true;
       }
     } else { // ５ブロック.
+      if (yakuFlag["ツモ"] ?? false) {
+        yaku.firstWhere((i) => i.name == "ツモ").selected = true;
+      }
       if (yakuFlag["平和"] ?? false) {
         yaku.firstWhere((i) => i.name == "平和").selected = true;
       }
@@ -331,19 +403,317 @@ class ScoreCalculator extends StatelessWidget {
     }
 
     // 符計算.
-    if (flagNaki) { // 鳴き.
-
-      agarihai[agariDetail!];
-
+    if (yakuFlag["平和"] ?? false) { // 平和なら.
       sumFuScore += 20;
-      if (flagTsumo) {sumFuScore += 2;}
+    }
+    else if (yakuFlag["七対子"] ?? false) { // 七対子なら.
+      sumFuScore += 25;
+    }
+    else if (flagNaki) { // 鳴き.
+
+      sumFuScore += 20; // 副低.
+      if (flagTsumo) {sumFuScore += 2;} // ツモ符.
+
+      final key = colectedAgarihai[detail.agari!]; // 何でアガリか.atodetsukau
+      final keyOffset = (key.$1, key.$2 - 2); // 両面待ち検索.
+
+      /*  ↓ ここからアガリの形につく符 ↓  */
+      final agariMelds = agariCal // ブロックの構成.
+          .where((w) => w.$1 == key)
+          .map((m) => m.$2);
+      final startAgariSyuntsu = agariCal // [(type, tile)...].
+          .where((w) => w.$2 == 0)
+          .map((m) => m.$1);
+      final kantyanHai = startAgariSyuntsu.map((m) => (m.$1, m.$2 + 1)).toList();
+      final oneSyuntsu = startAgariSyuntsu.where((w) => w.$2 == 0).map((m) => (m.$1, m.$2 + 2)).toList();
+      final nineSyuntsu = startAgariSyuntsu.where((w) => w.$2 == 6).toList();
+      final pentyanHai = oneSyuntsu + nineSyuntsu;
+          
+      if (agariMelds.contains(6)) { // 単騎待ち.
+        sumFuScore += 2;
+        print("単騎待ち");
+      }
+      // 待ちが両面になるパターン以外の時.
+      else if (startAgariSyuntsu.length == 1) {
+        if (kantyanHai.contains(key) || pentyanHai.contains(key)) {
+          sumFuScore += 2;
+          print("順子が１、カンチャン・ペンチャン");
+        }
+      }
+      else if (startAgariSyuntsu.length == 2) {
+        if (kantyanHai.contains(key) || pentyanHai.contains(key)) {
+          sumFuScore += 2;
+          print("順子が２、カンチャン・ペンチャン");
+        }
+      }
+      else if (startAgariSyuntsu.length == 3) {
+        if (kantyanHai.contains(key) || pentyanHai.contains(key)) {
+          sumFuScore += 2;
+          print("順子が３、カンチャン・ペンチャン");
+        }
+      }
+
+      /*  ↓ ここからブロックの形につく符 ↓  */
       final scoreMeld = agariCal
           .map((m) => m.$2)
           .toList();
       
+      if (scoreMeld.contains(1)) { // 暗刻があれば.
+        final fuAdjust = agariCal.where((w) => w.$2 == 1).map((m) => m.$1); // 符の調整.
+        final anko = agariCal
+            .where((w) => w.$1.$1 != 3 && w.$2 == 1) // 字牌以外の暗刻で.
+            .map((m) => m.$1.$2)
+            .toList();
+        int oneNineAnko = anko.where((w) =>  w  == 0 || w  == 8).length;
+        int zihaiAnko = agariCal
+            .where((w) => w.$2 == 1)
+            .where((w) => w.$1.$1 == 3)
+            .length;
+        int twoEightAnko = anko.where((w) =>  w  != 0 && w != 8).length;
+
+        sumFuScore += (oneNineAnko + zihaiAnko) * 8 + twoEightAnko * 4;
+
+        if (fuAdjust.contains(key) && flagRon) { // シャンポンロンアガリ.
+          if (key.$1 != 3 && (key.$2 != 0 && key.$2 != 8)) {sumFuScore -= 2;}
+          print("符調整、シャンポン");
+        }
+      }
+
+      if (scoreMeld.contains(3)) { // ポンがあれば.
+        final pon = agariCal
+            .where((w) => w.$1.$1 != 3 && w.$2 == 1) // 字牌以外の暗刻で.
+            .map((m) => m.$1.$2)
+            .toList();
+        int oneNinePon = pon.where((w) =>  w  == 0 || w  == 8).length;
+        int zihaiPon = agariCal
+            .where((w) => w.$2 == 3)
+            .where((w) => w.$1.$1 == 3)
+            .length;
+        int twoEightPon = pon.where((w) =>  w  != 0 && w != 8).length;
+
+        sumFuScore += (oneNinePon + zihaiPon) * 4 + twoEightPon * 2;
+      }
+
+      if (scoreMeld.contains(4)) { // 暗槓があれば.
+        final ankan = agariCal
+            .where((w) => w.$1.$1 != 3 && w.$2 == 1) // 字牌以外の暗刻で.
+            .map((m) => m.$1.$2)
+            .toList();
+        int oneNineAnkan = ankan.where((w) =>  w  == 0 || w  == 8).length;
+        int zihaiAnkan = agariCal
+            .where((w) => w.$2 == 4)
+            .where((w) => w.$1.$1 == 3)
+            .length;
+        int twoEightAnkan = ankan.where((w) =>  w  != 0 && w != 8).length;
+
+        sumFuScore += (oneNineAnkan + zihaiAnkan) * 32 + twoEightAnkan * 16;
+      }
+
+      if (scoreMeld.contains(5)) { // 明槓があれば.
+        final minkan = agariCal
+            .where((w) => w.$1.$1 != 3 && w.$2 == 1) // 字牌以外の暗刻で.
+            .map((m) => m.$1.$2)
+            .toList();
+        int oneNineMinkan = minkan.where((w) =>  w  == 0 || w  == 8).length;
+        int zihaiMinkan = agariCal
+            .where((w) => w.$2 == 5)
+            .where((w) => w.$1.$1 == 3)
+            .length;
+        int twoEightMinkan = minkan.where((w) =>  w  != 0 && w != 8).length;
+
+        sumFuScore += (oneNineMinkan + zihaiMinkan) * 16 + twoEightMinkan * 8;
+      }
+
+      int tanki = 0;
+      final zihaiTanki = agariCal
+          .where((w) => w.$1.$1 == 3 && w.$2 == 6)
+          .map((m) => m.$1.$2)
+          .toList();
+      if (zihaiTanki.length == 1) {
+        int bakaze = detail.bakaze;
+        int zikaze = detail.zikaze;
+        if (zihaiTanki.contains(bakaze) || zihaiTanki.contains(zikaze)) {
+          tanki += 2;
+        } else if ({4, 5, 6}.contains(zihaiTanki.single)) { // 白・発・中なら.
+          tanki += 2;
+        }
+      }
+
+      sumFuScore += tanki;
+
+      if (sumFuScore <= 20) {
+        sumFuScore = 20;
+      } else if (sumFuScore > 20 && sumFuScore <= 30) {
+        sumFuScore = 30;
+      } else if (sumFuScore > 30 && sumFuScore <= 40) {
+        sumFuScore = 40;
+      } else if (sumFuScore > 40 && sumFuScore <= 50) {
+        sumFuScore = 50;
+      } else if (sumFuScore > 50 && sumFuScore <= 60) {
+        sumFuScore = 60;
+      } else if (sumFuScore > 60 && sumFuScore <= 70) {
+        sumFuScore = 70;
+      } else if (sumFuScore > 70 && sumFuScore <= 80) {
+        sumFuScore = 80;
+      } else if (sumFuScore > 80 && sumFuScore <= 90) {
+        sumFuScore = 90;
+      } else if (sumFuScore > 90 && sumFuScore <= 100) {
+        sumFuScore = 100;
+      } else if (sumFuScore > 100 && sumFuScore <= 110) {
+        sumFuScore = 110;
+      } else if (sumFuScore > 110 && sumFuScore <= 120) {
+        sumFuScore = 120;
+      } else if (sumFuScore > 120 && sumFuScore <= 130) {
+        sumFuScore = 130;
+      } else if (sumFuScore > 130 && sumFuScore <= 140) {
+        sumFuScore = 140;
+      } else if (sumFuScore > 140 && sumFuScore <= 150) {
+        sumFuScore = 150;
+      } else if (sumFuScore > 150 && sumFuScore <= 160) {
+        sumFuScore = 160;
+      } else if (sumFuScore > 160 && sumFuScore <= 170) {
+        sumFuScore = 170;
+      }
     }
     else if (!flagNaki) { // 面前.
 
+      sumFuScore += 20; // 副低.
+      if (flagTsumo) {sumFuScore += 2;} // ツモ符.
+      if (flagRon) {sumFuScore += 10;} // ロン符.
+
+      final key = colectedAgarihai[detail.agari!]; // 何でアガリか.atodetsukau
+      final keyOffset = (key.$1, key.$2 - 2); // 両面待ち検索.
+
+      /*  ↓ ここからアガリの形につく符 ↓  */
+      final agariMelds = agariCal // ブロックの構成.
+          .where((w) => w.$1 == key)
+          .map((m) => m.$2);
+      final startAgariSyuntsu = agariCal // [(type, tile)...].
+          .where((w) => w.$2 == 0)
+          .map((m) => m.$1);
+      final kantyanHai = startAgariSyuntsu.map((m) => (m.$1, m.$2 + 1)).toList();
+      final oneSyuntsu = startAgariSyuntsu.where((w) => w.$2 == 0).map((m) => (m.$1, m.$2 + 2)).toList();
+      final nineSyuntsu = startAgariSyuntsu.where((w) => w.$2 == 6).toList();
+      final pentyanHai = oneSyuntsu + nineSyuntsu;
+          
+      if (agariMelds.contains(6)) { // 単騎待ち.
+        sumFuScore += 2;
+        print("単騎待ち");
+      }
+      // 待ちが両面になるパターン以外の時.
+      else if (startAgariSyuntsu.length == 1) {
+        if (kantyanHai.contains(key) || pentyanHai.contains(key)) {
+          sumFuScore += 2;
+          print("順子が１、カンチャン・ペンチャン");
+        }
+      }
+      else if (startAgariSyuntsu.length == 2) {
+        if (kantyanHai.contains(key) || pentyanHai.contains(key)) {
+          sumFuScore += 2;
+          print("順子が２、カンチャン・ペンチャン");
+        }
+      }
+      else if (startAgariSyuntsu.length == 3) {
+        if (kantyanHai.contains(key) || pentyanHai.contains(key)) {
+          sumFuScore += 2;
+          print("順子が３、カンチャン・ペンチャン");
+        }
+      } else if (startAgariSyuntsu.length == 4) { // 平和を排他にしてるから.
+        sumFuScore += 2;
+        print("順子が４、カンチャン・ペンチャン");
+      }
+
+      /*  ↓ ここからブロックの形につく符 ↓  */
+      final scoreMeld = agariCal
+          .map((m) => m.$2)
+          .toList();
+      
+      if (scoreMeld.contains(1)) { // 暗刻があれば.
+        final fuAdjust = agariCal.where((w) => w.$2 == 1).map((m) => m.$1); // 符の調整.
+        final anko = agariCal
+            .where((w) => w.$1.$1 != 3 && w.$2 == 1) // 字牌以外の暗刻で.
+            .map((m) => m.$1.$2)
+            .toList();
+        int oneNineAnko = anko.where((w) =>  w  == 0 || w  == 8).length;
+        int zihaiAnko = agariCal
+            .where((w) => w.$2 == 1)
+            .where((w) => w.$1.$1 == 3)
+            .length;
+        int twoEightAnko = anko.where((w) =>  w  != 0 && w != 8).length;
+
+        sumFuScore += (oneNineAnko + zihaiAnko) * 8 + twoEightAnko * 4;
+
+        if (fuAdjust.contains(key) && flagRon) { // シャンポンロンアガリ.
+          if (key.$1 != 3 && (key.$2 != 0 && key.$2 != 8)) {sumFuScore -= 2;}
+          print("符調整、シャンポン");
+        }
+      }
+
+      if (scoreMeld.contains(4)) { // 暗槓があれば.
+        final ankan = agariCal
+            .where((w) => w.$1.$1 != 3 && w.$2 == 1) // 字牌以外の暗刻で.
+            .map((m) => m.$1.$2)
+            .toList();
+        int oneNineAnkan = ankan.where((w) =>  w  == 0 || w  == 8).length;
+        int zihaiAnkan = agariCal
+            .where((w) => w.$2 == 4)
+            .where((w) => w.$1.$1 == 3)
+            .length;
+        int twoEightAnkan = ankan.where((w) =>  w  != 0 || w != 8).length;
+
+        sumFuScore += (oneNineAnkan + zihaiAnkan) * 32 + twoEightAnkan * 16;
+      }
+
+      int tanki = 0;
+      final zihaiTanki = agariCal
+          .where((w) => w.$1.$1 == 3 && w.$2 == 6)
+          .map((m) => m.$1.$2)
+          .toList();
+      if (zihaiTanki.length == 1) {
+        int bakaze = detail.bakaze;
+        int zikaze = detail.zikaze;
+        if (zihaiTanki.contains(bakaze) || zihaiTanki.contains(zikaze)) {
+          tanki += 2;
+        } else if ({4, 5, 6}.contains(zihaiTanki.single)) { // 白・発・中なら.
+          tanki += 2;
+        }
+      }
+
+      sumFuScore += tanki;
+
+      if (sumFuScore <= 20) {
+        sumFuScore = 20;
+      } else if (sumFuScore > 20 && sumFuScore <= 30) {
+        sumFuScore = 30;
+      } else if (sumFuScore > 30 && sumFuScore <= 40) {
+        sumFuScore = 40;
+      } else if (sumFuScore > 40 && sumFuScore <= 50) {
+        sumFuScore = 50;
+      } else if (sumFuScore > 50 && sumFuScore <= 60) {
+        sumFuScore = 60;
+      } else if (sumFuScore > 60 && sumFuScore <= 70) {
+        sumFuScore = 70;
+      } else if (sumFuScore > 70 && sumFuScore <= 80) {
+        sumFuScore = 80;
+      } else if (sumFuScore > 80 && sumFuScore <= 90) {
+        sumFuScore = 90;
+      } else if (sumFuScore > 90 && sumFuScore <= 100) {
+        sumFuScore = 100;
+      } else if (sumFuScore > 100 && sumFuScore <= 110) {
+        sumFuScore = 110;
+      } else if (sumFuScore > 110 && sumFuScore <= 120) {
+        sumFuScore = 120;
+      } else if (sumFuScore > 120 && sumFuScore <= 130) {
+        sumFuScore = 130;
+      } else if (sumFuScore > 130 && sumFuScore <= 140) {
+        sumFuScore = 140;
+      } else if (sumFuScore > 140 && sumFuScore <= 150) {
+        sumFuScore = 150;
+      } else if (sumFuScore > 150 && sumFuScore <= 160) {
+        sumFuScore = 160;
+      } else if (sumFuScore > 160 && sumFuScore <= 170) {
+        sumFuScore = 170;
+      }
     }
 
     
@@ -407,7 +777,7 @@ class ScoreCalculator extends StatelessWidget {
           Text(
             flagYakunashi // 鳴きか面前か.
               ? "役無し"
-              : "8000 点 $sumHanScore 翻 40 符",
+              : "8000 点 $sumHanScore 翻 $sumFuScore 符",
             style: TextStyle(fontSize: 18, color: Colors.black54),
           ),
         ],
