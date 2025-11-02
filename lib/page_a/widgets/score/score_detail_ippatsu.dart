@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ScoreOptionIppatsu extends StatelessWidget {
-  const ScoreOptionIppatsu({
+class ScoreDetailIppatsu extends StatelessWidget {
+  const ScoreDetailIppatsu({
     super.key,
     required this.enabled,       // リーチ時のみ有効
     required this.value,         // チェックON/OFF状態

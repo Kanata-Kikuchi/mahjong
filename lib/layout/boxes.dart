@@ -49,8 +49,8 @@ class BoxB extends StatelessWidget {
             border: Border.all(color: Colors.black26),
           ),
           child: SizedBox(
-            width: double.infinity,
-            height: double.infinity,
+            // width: double.infinity,
+            // height: double.infinity,
             child: _test
           )
         ),

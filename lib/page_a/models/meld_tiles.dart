@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mahjong/widgets/agari_tiles.dart';
-import 'package:mahjong/data/images.dart';
+import 'package:mahjong/page_a/widgets/view/agari_tiles.dart';
+import 'package:mahjong/page_a/data/images.dart';
 import 'dart:math' as math;
 
   List<Widget> manzu = [

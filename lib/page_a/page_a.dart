@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:mahjong/widgets/agari_tiles.dart';
-import 'package:mahjong/boxes.dart';
-import 'package:mahjong/models/huro.dart';
-import 'package:mahjong/data/images.dart';
-import 'package:mahjong/models/meld_tiles.dart';
-import 'package:mahjong/widgets/score/score.dart';
-import 'package:mahjong/widgets/select_option.dart';
-import 'package:mahjong/widgets/select_tiles.dart';
-import 'package:mahjong/widgets/select_type.dart';
-import 'package:mahjong/widgets/select_meld.dart';
+import 'package:mahjong/page_a/widgets/view/agari_tiles.dart';
+import 'package:mahjong/layout/boxes.dart';
+import 'package:mahjong/page_a/models/huro.dart';
+import 'package:mahjong/page_a/data/images.dart';
+import 'package:mahjong/page_a/models/meld_tiles.dart';
+import 'package:mahjong/page_a/widgets/score/score.dart';
+import 'package:mahjong/page_a/widgets/select/select_option.dart';
+import 'package:mahjong/page_a/widgets/select/select_tiles.dart';
+import 'package:mahjong/page_a/widgets/select/select_type.dart';
+import 'package:mahjong/page_a/widgets/select/select_meld.dart';
 
 
 final List<Widget> manzu = [

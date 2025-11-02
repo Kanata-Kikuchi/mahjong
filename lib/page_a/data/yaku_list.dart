@@ -1,4 +1,4 @@
-import 'package:mahjong/models/yaku.dart';
+import 'package:mahjong/page_a/models/yaku.dart';
 
 
 final List<Yaku> yakuList = [

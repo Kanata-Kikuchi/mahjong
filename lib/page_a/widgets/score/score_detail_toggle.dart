@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ScoreToggle extends StatelessWidget {
-  ScoreToggle({
+class ScoreDetailToggle extends StatelessWidget {
+  ScoreDetailToggle({
     required this.title,
     required this.label0,
     this.label1,

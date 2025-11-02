@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mahjong/data/images.dart';
+import 'package:mahjong/page_a/data/images.dart';
 
-class ScoreOptionAgari extends StatelessWidget {
-  ScoreOptionAgari({
+class ScoreDetailAgari extends StatelessWidget {
+  ScoreDetailAgari({
     required this.bufAgari,
     required this.value,
     required this.onChanged,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mahjong/widgets/option_button.dart';
+import 'package:mahjong/page_a/widgets/select/option_button.dart';
 
 
 class SelectOption extends StatelessWidget {

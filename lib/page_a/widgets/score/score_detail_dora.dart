@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ScoreOptionDora extends StatelessWidget {
-  const ScoreOptionDora({
+class ScoreDetailDora extends StatelessWidget {
+  const ScoreDetailDora({
     super.key,
     required this.doraCount,
     required this.onPressedRemove,

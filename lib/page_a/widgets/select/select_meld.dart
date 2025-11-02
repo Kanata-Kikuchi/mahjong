@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mahjong/data/images.dart';
-import 'package:mahjong/models/meld_tiles.dart';
+import 'package:mahjong/page_a/data/images.dart';
+import 'package:mahjong/page_a/models/meld_tiles.dart';
 import 'dart:math' as math;
 
-import 'package:mahjong/widgets/option_button.dart';
+import 'package:mahjong/page_a/widgets/select/option_button.dart';
 
 class SelectMeld extends StatelessWidget {
   const SelectMeld({

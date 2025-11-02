@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mahjong/models/score_detail.dart';
-import 'package:mahjong/widgets/score/score_calculator.dart';
-import 'package:mahjong/widgets/score/score_detail_agari.dart';
-import 'package:mahjong/widgets/score/score_detail_dora.dart';
-import 'package:mahjong/widgets/score/score_detail_ippatsu.dart';
-import 'package:mahjong/widgets/score/score_detail_toggle.dart';
+import 'package:mahjong/page_a/models/score_detail.dart';
+import 'package:mahjong/page_a/widgets/score/score_calculator.dart';
+import 'package:mahjong/page_a/widgets/score/score_detail_agari.dart';
+import 'package:mahjong/page_a/widgets/score/score_detail_dora.dart';
+import 'package:mahjong/page_a/widgets/score/score_detail_ippatsu.dart';
+import 'package:mahjong/page_a/widgets/score/score_detail_toggle.dart';
 
 
 class Score extends StatefulWidget {
@@ -132,13 +132,13 @@ class _ScoreState extends State<Score> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           flagNaki // 鳴いていたら.
-          ? ScoreToggle(
+          ? ScoreDetailToggle(
               title: "リーチ系",
               label0: "なし",
               groupValue: _reachDetail,
               onChanged: _onChangedReach,
             )
-          : ScoreToggle(
+          : ScoreDetailToggle(
               title: "リーチ系",
               label0: "なし",
               label1: "リーチ",
@@ -148,7 +148,7 @@ class _ScoreState extends State<Score> {
             ),
           SizedBox(height: sizeBoxSpace),
           flagKan // 槓されていたら.
-          ? ScoreToggle(
+          ? ScoreDetailToggle(
               title: "ツモ系",
               label0: "なし",
               label1: "海底",
@@ -156,7 +156,7 @@ class _ScoreState extends State<Score> {
               groupValue: _tsumoDetail,
               onChanged: _onChangedTsumo,
             )
-          : ScoreToggle(
+          : ScoreDetailToggle(
               title: "ツモ系",
               label0: "なし",
               label1: "海底",
@@ -164,7 +164,7 @@ class _ScoreState extends State<Score> {
               onChanged: _onChangedTsumo,
             ),
           SizedBox(height: sizeBoxSpace),
-          ScoreToggle(
+          ScoreDetailToggle(
             title: "場風",
             label0: "東場",
             label1: "南場",
@@ -173,7 +173,7 @@ class _ScoreState extends State<Score> {
             onChanged: _onChangedBakaze
           ),
           SizedBox(height: sizeBoxSpace),
-          ScoreToggle(
+          ScoreDetailToggle(
             title: "自風",
             label0: "東家",
             label1: "南家",
@@ -187,18 +187,18 @@ class _ScoreState extends State<Score> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.center, // 縦中央で安定
             children: [
-              ScoreOptionDora( // ドラ.
+              ScoreDetailDora( // ドラ.
                 doraCount: _doraDetail,
                 onPressedRemove: _onPressedRemove,
                 onPressedAdd: _onPressedAdd,
               ),
-              ScoreOptionIppatsu( // 一発.
+              ScoreDetailIppatsu( // 一発.
                 enabled: _reachDetail != 0,
                 value: _ippatsuDetail,
                 onChanged: _onCheackedIppatsu,
               ),
               SizedBox(width: 20),
-              ScoreOptionAgari( // アガリ牌.
+              ScoreDetailAgari( // アガリ牌.
                 bufAgari: widget.bufAgari,
                 value: _agariDetail,
                 onChanged: _onChangedAgari,
@@ -213,13 +213,13 @@ class _ScoreState extends State<Score> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           flagNaki
-          ? ScoreToggle(
+          ? ScoreDetailToggle(
               title: "リーチ系",
               label0: "なし",
               groupValue: _reachDetail,
               onChanged: _onChangedReach,
             )
-          : ScoreToggle(
+          : ScoreDetailToggle(
               title: "リーチ系",
               label0: "なし",
               label1: "リーチ",
@@ -228,7 +228,7 @@ class _ScoreState extends State<Score> {
               onChanged: _onChangedReach,
             ),
           SizedBox(height: sizeBoxSpace),
-          ScoreToggle(
+          ScoreDetailToggle(
             title: "ロン系",
             label0: "なし",
             label1: "河底",
@@ -237,7 +237,7 @@ class _ScoreState extends State<Score> {
             onChanged: _onChangedRon
           ),
           SizedBox(height: sizeBoxSpace),
-          ScoreToggle(
+          ScoreDetailToggle(
             title: "場風",
             label0: "東場",
             label1: "南場",
@@ -246,7 +246,7 @@ class _ScoreState extends State<Score> {
             onChanged: _onChangedBakaze
           ),
           SizedBox(height: sizeBoxSpace),
-          ScoreToggle(
+          ScoreDetailToggle(
             title: "自風",
             label0: "東家",
             label1: "南家",
@@ -260,18 +260,18 @@ class _ScoreState extends State<Score> {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              ScoreOptionDora( // ドラ.
+              ScoreDetailDora( // ドラ.
                 doraCount: _doraDetail,
                 onPressedRemove: _onPressedRemove,
                 onPressedAdd: _onPressedAdd,
               ),
-              ScoreOptionIppatsu( // 一発.
+              ScoreDetailIppatsu( // 一発.
                 enabled: _reachDetail != 0,
                 value: _ippatsuDetail,
                 onChanged: _onCheackedIppatsu
               ),
               SizedBox(width: 20),
-              ScoreOptionAgari( // アガリ牌.
+              ScoreDetailAgari( // アガリ牌.
                 bufAgari: widget.bufAgari,
                 value: _agariDetail,
                 onChanged: _onChangedAgari,

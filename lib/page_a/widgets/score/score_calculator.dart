@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mahjong/data/yaku_list.dart';
-import 'package:mahjong/models/meld_tiles.dart';
-import 'package:mahjong/models/score_detail.dart';
-import 'package:mahjong/models/yaku.dart';
+import 'package:mahjong/page_a/data/yaku_list.dart';
+import 'package:mahjong/page_a/models/meld_tiles.dart';
+import 'package:mahjong/page_a/models/score_detail.dart';
+import 'package:mahjong/page_a/models/yaku.dart';
 
 class ScoreCalculator extends StatelessWidget {
   ScoreCalculator({
@@ -433,25 +433,25 @@ class ScoreCalculator extends StatelessWidget {
           
       if (agariMelds.contains(6)) { // 単騎待ち.
         sumFuScore += 2;
-        print("単騎待ち");
+        // print("単騎待ち");
       }
       // 待ちが両面になるパターン以外の時.
       else if (startAgariSyuntsu.length == 1) {
         if (kantyanHai.contains(key) || pentyanHai.contains(key)) {
           sumFuScore += 2;
-          print("順子が１、カンチャン・ペンチャン");
+          // print("順子が１、カンチャン・ペンチャン");
         }
       }
       else if (startAgariSyuntsu.length == 2) {
         if (kantyanHai.contains(key) || pentyanHai.contains(key)) {
           sumFuScore += 2;
-          print("順子が２、カンチャン・ペンチャン");
+          // print("順子が２、カンチャン・ペンチャン");
         }
       }
       else if (startAgariSyuntsu.length == 3) {
         if (kantyanHai.contains(key) || pentyanHai.contains(key)) {
           sumFuScore += 2;
-          print("順子が３、カンチャン・ペンチャン");
+          // print("順子が３、カンチャン・ペンチャン");
         }
       }
 
@@ -477,7 +477,7 @@ class ScoreCalculator extends StatelessWidget {
 
         if (fuAdjust.contains(key) && flagRon) { // シャンポンロンアガリ.
           if (key.$1 != 3 && (key.$2 != 0 && key.$2 != 8)) {sumFuScore -= 2;}
-          print("符調整、シャンポン");
+          // print("符調整、シャンポン");
         }
       }
 
@@ -600,29 +600,29 @@ class ScoreCalculator extends StatelessWidget {
           
       if (agariMelds.contains(6)) { // 単騎待ち.
         sumFuScore += 2;
-        print("単騎待ち");
+        // print("単騎待ち");
       }
       // 待ちが両面になるパターン以外の時.
       else if (startAgariSyuntsu.length == 1) {
         if (kantyanHai.contains(key) || pentyanHai.contains(key)) {
           sumFuScore += 2;
-          print("順子が１、カンチャン・ペンチャン");
+          // print("順子が１、カンチャン・ペンチャン");
         }
       }
       else if (startAgariSyuntsu.length == 2) {
         if (kantyanHai.contains(key) || pentyanHai.contains(key)) {
           sumFuScore += 2;
-          print("順子が２、カンチャン・ペンチャン");
+          // print("順子が２、カンチャン・ペンチャン");
         }
       }
       else if (startAgariSyuntsu.length == 3) {
         if (kantyanHai.contains(key) || pentyanHai.contains(key)) {
           sumFuScore += 2;
-          print("順子が３、カンチャン・ペンチャン");
+          // print("順子が３、カンチャン・ペンチャン");
         }
       } else if (startAgariSyuntsu.length == 4) { // 平和を排他にしてるから.
         sumFuScore += 2;
-        print("順子が４、カンチャン・ペンチャン");
+        // print("順子が４、カンチャン・ペンチャン");
       }
 
       /*  ↓ ここからブロックの形につく符 ↓  */
@@ -647,7 +647,7 @@ class ScoreCalculator extends StatelessWidget {
 
         if (fuAdjust.contains(key) && flagRon) { // シャンポンロンアガリ.
           if (key.$1 != 3 && (key.$2 != 0 && key.$2 != 8)) {sumFuScore -= 2;}
-          print("符調整、シャンポン");
+          // print("符調整、シャンポン");
         }
       }
 
@@ -663,7 +663,7 @@ class ScoreCalculator extends StatelessWidget {
             .length;
         int twoEightAnkan = ankan.where((w) =>  w  != 0 && w != 8).length;
 
-        print("onr: $oneNineAnkan  zihai: $zihaiAnkan two: $twoEightAnkan");
+        // print("onr: $oneNineAnkan  zihai: $zihaiAnkan two: $twoEightAnkan");
 
         sumFuScore += (oneNineAnkan + zihaiAnkan) * 32 + twoEightAnkan * 16;
       }
