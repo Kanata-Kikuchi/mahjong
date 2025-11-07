@@ -7,6 +7,9 @@ class ScoreDetail {
   final int dora;
   final bool ippatsu;
   final int? agari;
+  final int? score;
+  final bool flagRon;
+  final bool flagTsumo;
   
   const ScoreDetail({
     required this.reach,
@@ -16,6 +19,9 @@ class ScoreDetail {
     required this.zikaze,
     required this.dora,
     required this.ippatsu,
-    required this.agari
+    required this.agari,
+    required this.score,
+    required this.flagRon,
+    required this.flagTsumo
   });
 }

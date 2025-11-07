@@ -14,6 +14,7 @@ class Score extends StatefulWidget {
     required this.flagRon,
     required this.flagTsumo,
     required this.flagCal,
+    required this.onDetailChanged,
     super.key
   });
 
@@ -22,6 +23,7 @@ class Score extends StatefulWidget {
   bool flagRon;
   bool flagTsumo;
   bool flagCal;
+  void Function(ScoreDetail) onDetailChanged; // アガリ状況のコールバック.
 
   @override
   State<Score> createState() => _ScoreState();
@@ -39,11 +41,26 @@ class _ScoreState extends State<Score> {
   bool flagNaki = false;
   bool flagKan = false;
   int? _agariDetail; // アガリ牌.
+  int? _score;
   List<(int type, int tile)> _colectedAgarihai = []; // アガリ選択.
 
   double sizeBoxSpace = 5;
 
+  ScoreDetail get _detail => ScoreDetail(
+    reach: _reachDetail,
+    tsumo: _tsumoDetail,
+    ron: _ronDetail,
+    bakaze: _bakazeDetail,
+    zikaze: _oyakoDetail,
+    dora: _doraDetail,
+    ippatsu: _ippatsuDetail,
+    agari: _agariDetail,
+    score: _score,
+    flagRon: widget.flagRon,
+    flagTsumo: widget.flagTsumo
+  );
 
+  void _helper() => widget.onDetailChanged(_detail); // 念のためアクションごとに呼ぶ.
 
   @override
   Widget build(BuildContext context) {
@@ -56,58 +73,64 @@ class _ScoreState extends State<Score> {
       return a.$2 == 4 || a.$2 == 5;
     });
 
-    final _detail = ScoreDetail(
-      reach: _reachDetail,
-      tsumo: _tsumoDetail,
-      ron: _ronDetail,
-      bakaze: _bakazeDetail,
-      zikaze: _oyakoDetail,
-      dora: _doraDetail,
-      ippatsu: _ippatsuDetail,
-      agari: _agariDetail
-    );
+    void sendScore(int score) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() => _score = score);
+      });
+      _helper();
+    }
 
     void _onChangedReach(int i) {
       setState(() {
         _reachDetail = i;
         if (_reachDetail == 0) _ippatsuDetail = false;
       });
+      _helper();
     }
 
     void _onChangedTsumo(int i) {
       setState(() => _tsumoDetail = i);
+      _helper();
     }
 
     void _onChangedRon(int i) {
       setState(() => _ronDetail = i);
+      _helper();
     }
 
     void _onChangedBakaze(int i) {
       setState(() => _bakazeDetail = i);
+      _helper();
     }
 
     void _onChangedOyako(int i) {
       setState(() => _oyakoDetail = i);
+      _helper();
     }
 
     void _onPressedRemove() {
       setState(() => _doraDetail--);
+      _helper();
     }
 
     void _onPressedAdd() {
       setState(() => _doraDetail++);
+      _helper();
     }
 
     void _onCheackedIppatsu(bool? i) {
       setState(() => _ippatsuDetail = i ?? false);
+      _helper();
     }
     
     void _onChangedAgari(int? i) {
       setState(() => _agariDetail = i);
+      _helper();
     }
 
     void _colectedAgari(List<(int type, int tile)> i) {
       setState(() => _colectedAgarihai = i);
+      _helper();
     }
 
     Widget content;
@@ -125,6 +148,7 @@ class _ScoreState extends State<Score> {
           flagNaki: flagNaki,
           detail: _detail,
           colectedAgarihai: _colectedAgarihai,
+          sendScore: sendScore,
         );
       }
     } else if (widget.flagTsumo) { // ツモが押されたら.
@@ -294,8 +318,8 @@ class _ScoreState extends State<Score> {
 
       content = const Center(
         child: Text(
-          "ロンかツモボタンを押してください",
-          style: TextStyle(fontSize: 16, color: Colors.grey),
+          "アガリ形を選択してください",
+          style: TextStyle(fontSize: 16, color: Colors.black),
         ),
       );
     }

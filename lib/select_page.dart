@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mahjong/page_a/models/score_detail.dart';
 import 'package:mahjong/page_a/page_a.dart';
+import 'package:mahjong/page_b/models/game.dart';
+import 'package:mahjong/page_b/models/player.dart';
 import 'package:mahjong/page_b/page_b.dart';
+import 'package:mahjong/page_b/widgets/cal_popup.dart';
+
 
 class SelectPage extends StatefulWidget {
   const SelectPage({super.key});
@@ -11,15 +16,165 @@ class SelectPage extends StatefulWidget {
 
 class _SelectPageState extends State<SelectPage> {
 
-    int index = 0;
+  int index = 0;
+  ScoreDetail? detail;
+  int _roundNumber = 0; // ０ ～ １１.
+  int _gameStick = 0; // 本場.
+  int _reachStick = 0; // 供託.
 
-  final pages = const [
-    // PageA(),
-    PageB()
+  final players = [
+    Player(name: "Aさん", index: 0, zikaze: 0, score: 25000),
+    Player(name: "Bさん", index: 1, zikaze: 1, score: 25000),
+    Player(name: "Cさん", index: 2, zikaze: 2, score: 25000),
+    Player(name: "Dさん", index: 3, zikaze: 3, score: 25000)
   ];
+
+
+  Game get _game => Game(
+    gameStick: _gameStick,
+    reachStick: _reachStick,
+    scoreBottom: players[0].score,
+    scoreRight: players[1].score,
+    scoreTop: players[2].score,
+    scoreLeft: players[3].score
+  );
+
+  String _round(int i) {
+    List<String> bakaze = ["東", "南", "西"];
+    String game = "";
+    int kyoku = 1;
+
+    if (i >= 0 && i < 4) {
+      game = bakaze[0];
+      kyoku = (i % 4) + 1;
+    } else if (i >= 4 && i < 8) {
+      game = bakaze[1];
+      kyoku = (i % 4) + 1;
+    } else if (i >= 8 && i < 12) {
+      game = bakaze[2];
+      kyoku = (i % 4) + 1;
+    } else {return "終局";}
+
+    return "$game $kyoku 局";
+  }
+
+  void _roundProgress() { // 流局時と、親以外があがったら.
+    setState(() {
+      _roundNumber += 1;
+      if (_roundNumber > 11) {_roundNumber = 0;}
+
+      for (int i = 0; i < players.length; i++) {
+        players[i].zikaze = (players[i].zikaze -= 1) % 4; // 自風の入れ替わり.
+      }
+    });
+  }
+
+  void _onPressedOkuru(ScoreDetail d) {
+    detail = d;
+  }
+
+  void _onPressedDraw(List<List<int>>? drawResult) { // 流局時の点数分配と局進行.
+    if (drawResult != null) {
+      for (int i = 0; i < players.length; i++) {
+        if (drawResult[0].contains(i)) { // ０１２３リーチindex.
+          setState(() => players[i].score -= 1000); // リーチ棒.
+        }
+      }
+      final tenpai = drawResult[1].length;
+      int tenpaiScore;
+      int noTenpaiScore;
+      if (tenpai == 1) {tenpaiScore = 3000; noTenpaiScore = 1000;}
+      else if (tenpai == 2) {tenpaiScore = 1500; noTenpaiScore = 1500;}
+      else if (tenpai == 3) {tenpaiScore = 1000; noTenpaiScore = 3000;}
+      else {tenpaiScore = 0; noTenpaiScore = 0;}
+
+      for (int i = 0; i < players.length; i++) {
+        if (drawResult[1].contains(i + 4)) { // ５６７８聴牌index.
+          setState(() => players[i].score += tenpaiScore);
+        } else {
+          setState(() => players[i].score -= noTenpaiScore);
+        }
+      }
+
+      final bufReachStick = drawResult[0].length;
+      setState(() {
+       _gameStick += 1;
+       _reachStick += bufReachStick;
+      });
+
+      final oya = players
+          .where((w) => w.zikaze == 0)
+          .map((m) => (m.index + 4)).first; // 聴牌indexが５６７８だから＋４.
+
+      if (!drawResult[1].contains(oya)) {_roundProgress();} // 親がノーテンなら.
+    }
+  }
+
+  void _closedPopup((int i, int k, int u)? r) {
+    if (r != null) {
+      final winner = detail!.zikaze; // 誰がアガリか.
+
+      // ロンアガリ.
+      if (r.$1 == 0) { // (0, score, playersMap.keys.singleWhere((w) => playersMap[w] == notWinnerPlayer[_selected.first])).
+        setState(() {
+          players.firstWhere((w) => w.zikaze == winner).score += r.$2;
+          players.firstWhere((w) => w.index == r.$3).score -= r.$2; //$3はPlayerのindexに相当.
+        });
+      }
+      // 親のツモアガリ.
+      else if (r.$1 == 1) { // (1, childrenScore, 0).
+        setState(() {
+          players.firstWhere((w) => w.zikaze == 0).score += (r.$2 * 3);
+          players.where((w) => w.zikaze != 0).forEach((e) => e.score -= r.$2);
+        });
+      }
+      // 子のツモアガリ.
+      else { // (2, childScore, hostScore).
+        setState(() {
+          players.firstWhere((w) => w.zikaze == winner).score += (r.$2 * 2) + r.$3;
+          players.firstWhere((w) => w.zikaze == 0).score -= r.$3;
+          players.where((w) => w.zikaze != 0 && w.zikaze != winner).forEach((e) => e.score -= r.$2);
+        });
+      }
+
+      if (winner != 0) {_roundProgress();}
+    }
+  }
+
+  void _onChangedPage() {
+    setState(() => index = 1); // 表示切替.
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final r = await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => CalPopup(
+          round: _round(_roundNumber),
+          roundNumber: _roundNumber,
+          detail: detail,
+          players: players
+        )
+      );
+      _closedPopup(r);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+
+    final pages = [
+      PageA(
+        onPressedOkuru: _onPressedOkuru,
+        onChangedPage: _onChangedPage
+      ),
+      PageB(
+        round: _round(_roundNumber),
+        game: _game,
+        players: players,
+        onPressedDraw: _onPressedDraw,
+      )
+    ];
+    
     return Scaffold(
       body: Row(
         children: [

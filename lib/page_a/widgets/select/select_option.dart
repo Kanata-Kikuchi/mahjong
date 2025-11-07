@@ -7,7 +7,7 @@ class SelectOption extends StatelessWidget {
     required this.onPressedTsumo,
     required this.onPressedRon,
     required this.onPressedModoru,
-    required this.onPressedOkuru,
+    required this.onPressedKeisan,
     required this.label,
     super.key
   });
@@ -15,7 +15,7 @@ class SelectOption extends StatelessWidget {
   VoidCallback onPressedTsumo;
   VoidCallback onPressedRon;
   VoidCallback onPressedModoru;
-  VoidCallback onPressedOkuru;
+  VoidCallback onPressedKeisan;
   String label;
 
   @override
@@ -47,7 +47,7 @@ class SelectOption extends StatelessWidget {
       SizedBox(width: spacing),
       Expanded(
         child: OptionButton(
-          onPressed: onPressedOkuru,
+          onPressed: onPressedKeisan,
           child: SizedBox(height: 100, child: Center(child: Text(label)))
         )
       ),

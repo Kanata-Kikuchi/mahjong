@@ -1,44 +1,63 @@
 import 'package:flutter/material.dart';
-import 'package:mahjong/main.dart';
 import 'package:mahjong/layout/boxes.dart';
+import 'package:mahjong/page_b/models/game.dart';
+import 'package:mahjong/page_b/models/player.dart';
+import 'package:mahjong/page_b/widgets/game_content.dart';
+import 'package:mahjong/page_b/widgets/game_stick.dart';
 
-class PageB extends StatefulWidget {
-  const PageB({super.key});
+class PageB extends StatelessWidget {
+  PageB({
+    required this.round,
+    required this.game,
+    required this.players,
+    required this.onPressedDraw,
+    super.key
+  });
 
-  @override
-  State<PageB> createState() => _PageBState();
-}
+  String round;
+  Game game;
+  List<Player> players;
+  void Function(List<List<int>>?) onPressedDraw;
 
-class _PageBState extends State<PageB> {
-
-  String _labelTop = "東";
-  String _labelRight = "西";
-  String _labelLeft = "南";
-  String _labelBottom = "北";
-
-  String _scoreTop = "25000";
-  String _scoreRight = "25000";
-  String _scoreLeft = "25000";
-  String _scoreBottom = "25000";
-  
+  final Map<int, String> label = {
+    0 : "東家 : ",
+    1 : "南家 : ",
+    2 : "西家 : ",
+    3 : "北家 : ",
+  };
 
   @override
   Widget build(BuildContext context) {
+    
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        Stack(
           children: [
-            BoxB( // Top.
-              _labelTop,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 80, vertical: 18),
-                child: Text(
-                  _scoreTop,
-                  style: TextStyle(fontSize: 50, letterSpacing: 5)
+            Center(
+              child: BoxB( // Top.
+                "${label[players[2].zikaze]} ${players[2].name}",
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 80, vertical: 18),
+                  child: Text(
+                    game.scoreTop.toString(),
+                    style: TextStyle(fontSize: 50, letterSpacing: 5)
+                  )
                 )
-              )
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                GameContent( // 局数のポップアップ.
+                  round: round,
+                  game: game,
+                  players: players,
+                  onPressedDraw: onPressedDraw,
+                ),
+                SizedBox(width: 200),
+                GameStick(game: game,)
+              ],
             )
           ],
         ),
@@ -46,42 +65,37 @@ class _PageBState extends State<PageB> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             BoxB( // Left.
-              _labelLeft,
+              "${label[players[3].zikaze]} ${players[3].name}",
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 80, vertical: 18),
                 child: Text(
-                  _scoreLeft,
+                  game.scoreLeft.toString(),
                   style: TextStyle(fontSize: 50, letterSpacing: 5)
                 )
               )
             ),
             SizedBox(),
             BoxB( // Right.
-              _labelRight,
+              "${label[players[1].zikaze]} ${players[1].name}",
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 80, vertical: 18),
                 child: Text(
-                  _scoreRight,
+                  game.scoreRight.toString(),
                   style: TextStyle(fontSize: 50, letterSpacing: 5)
                 )
               )
             )
           ],
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            BoxB( // Bottom.
-              _labelBottom,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 80, vertical: 18),
-                child: Text(
-                  _scoreBottom,
-                  style: TextStyle(fontSize: 50, letterSpacing: 5)
-                )
-              )
+        BoxB( // Bottom.
+          "${label[players[0].zikaze]} ${players[0].name}",
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 80, vertical: 18),
+            child: Text(
+              game.scoreBottom.toString(),
+              style: TextStyle(fontSize: 50, letterSpacing: 5)
             )
-          ],
+          )
         )
       ],
     );

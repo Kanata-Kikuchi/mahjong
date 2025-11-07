@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mahjong/page_a/models/score_detail.dart';
 import 'package:mahjong/page_a/widgets/view/agari_tiles.dart';
 import 'package:mahjong/layout/boxes.dart';
 import 'package:mahjong/page_a/models/huro.dart';
@@ -62,7 +63,14 @@ Image back = Image.asset(Images.back.path);
 
 
 class PageA extends StatefulWidget {
-  const PageA({super.key});
+  PageA({
+    required this.onPressedOkuru,
+    required this.onChangedPage,
+    super.key
+  });
+
+  void Function(ScoreDetail) onPressedOkuru;
+  void Function() onChangedPage;
 
   @override
   State<PageA> createState() => _PageAState();
@@ -82,12 +90,27 @@ class _PageAState extends State<PageA> {
   int _countMenzen = 0; // １４枚.
   int _countToitsu = 0; // 対子が何組か.
   int _countHuro = 0; // ブロック数の把握.
+  int refresh = 0;
 
   bool _flagRon = false;
   bool _flagTsumo = false;
   bool _flagCal = false;
 
   String _labelCal = "計算";
+
+  ScoreDetail detail = ScoreDetail(
+    reach: 0,
+    tsumo: 0,
+    ron: 0,
+    bakaze: 0,
+    zikaze: 0,
+    dora: 0,
+    ippatsu: false,
+    agari: null,
+    score: null,
+    flagRon: false,
+    flagTsumo: false
+  );
   
   List<Widget> _menzen = List.generate(14, (_) => back); // 描画用、面前手牌.
   final List<Widget> _huro = []; // 描画用、副露手牌.
@@ -98,7 +121,12 @@ class _PageAState extends State<PageA> {
   final List<(int type, int tile)> _bufAgari = []; // ４枚以上にならないように管理するため.
   final List<((int type, int tile), int meld)> _agariCal = []; // 点数計算のため.
 
-  void selectMeldOnChanged(int i) { //AgariTilesに描画する関数
+  void _onDetailChanged(ScoreDetail d) {
+    widget.onPressedOkuru(d); // そのまま送る.
+    detail = d;
+  }
+
+  void _selectMeldOnChanged(int i) { //AgariTilesに描画する関数
 
     setState(() {
       _selectMeld = i;
@@ -370,8 +398,7 @@ class _PageAState extends State<PageA> {
     });
   }
 
-
-  void onPressedTsumo() {
+  void _onPressedTsumo() {
     if(_bufMenzen.length + _huro.length < 14) {return;} // 上がれる形じゃなければ.
     if(_flagRon || _flagTsumo) {return;} // 一度ツモかロンを押していたら.
     
@@ -397,8 +424,7 @@ class _PageAState extends State<PageA> {
     // print(_menzen);
   }
 
-
-  void onPressedRon() {
+  void _onPressedRon() {
     if(_bufMenzen.length + _huro.length < 14) {return;} // 上がれる形じゃなければ.
     if(_flagRon || _flagTsumo) {return;} // 一度ツモかロンを押していたら.
     
@@ -430,8 +456,7 @@ class _PageAState extends State<PageA> {
     // print(_menzen);
   }
 
-
-  void onPressedModoru() { 
+  void _onPressedModoru() { 
     if (_bufAgari.length == 0) {return;} // SelectMeld が何も選択されていなければ.
     if (_flagCal) {
       _flagCal = false;
@@ -542,11 +567,32 @@ class _PageAState extends State<PageA> {
 
   }
 
-
-  void onPressedOkuru() {
+  void _onPressedKeisan() {
     if (!_flagCal && (_flagRon || _flagTsumo)) {
       _flagCal = true;
       setState(() => _labelCal = "送る");
+    } else if (_flagCal && detail.agari != null) { // リセット.
+      widget.onChangedPage();
+
+      _menzen = List.generate(14, (_) => back);
+      _bufMenzen.clear();
+      _bufAgari.clear();
+      _bufToitsu.clear();
+      _huro.clear();
+      _agariCal.clear();
+      _recordPushMeldType.clear();
+      _countBrock = 0;
+      _countMenzen = 0;
+      _countToitsu = 0;
+      _countHuro = 0;
+      _flagCal = false;
+      _flagTsumo = false;
+      _flagRon = false;
+      setState(() {
+        _selectType = 0;
+        _selectTile = 0;
+        refresh ++;
+      });
     }
   }
 
@@ -563,7 +609,11 @@ class _PageAState extends State<PageA> {
                 child: BoxB("SelectType", child:
                   SelectType(
                     onChanged: (i) => setState(() {
-                      _selectType = i;
+                      if (_selectType == i) {
+                        refresh++;
+                      } else {
+                        _selectType = i;
+                      }
                       _selectTile = 0;
                     })
                   ),
@@ -572,7 +622,7 @@ class _PageAState extends State<PageA> {
               Expanded(
                 child: BoxB("SelectTiles", child:
                   SelectTiles(
-                    key: ValueKey(_selectType),
+                    key: ValueKey((_selectType, refresh)),
                     typeIndex: _selectType,
                     onChanged: (i) => setState(() {
                       _selectTile = i;
@@ -587,7 +637,7 @@ class _PageAState extends State<PageA> {
               SelectMeld(
                 typeIndex: _selectType,
                 tileIndex: _selectTile,
-                onChanged: selectMeldOnChanged
+                onChanged: _selectMeldOnChanged
               )
             )
           ),
@@ -601,16 +651,17 @@ class _PageAState extends State<PageA> {
                     flagRon: _flagRon,
                     flagTsumo: _flagTsumo,
                     flagCal: _flagCal,
+                    onDetailChanged: _onDetailChanged,
                   )
                 )
               ),
               Expanded(flex: 1,
                 child: BoxB("Option", child:
                   SelectOption(
-                    onPressedTsumo: onPressedTsumo,
-                    onPressedRon: onPressedRon,
-                    onPressedModoru: onPressedModoru,
-                    onPressedOkuru: onPressedOkuru,
+                    onPressedTsumo: _onPressedTsumo,
+                    onPressedRon: _onPressedRon,
+                    onPressedModoru: _onPressedModoru,
+                    onPressedKeisan: _onPressedKeisan,
                     label: _labelCal
                   )
                 )

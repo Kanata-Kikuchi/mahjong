@@ -12,11 +12,15 @@ class ScoreCalculator extends StatelessWidget {
     required this.flagNaki,
     required this.detail,
     required this.colectedAgarihai,
+    required this.sendScore,
     super.key
   }) {
     yakuFlag = { // 役ロジック.
       "ツモ": flagTsumo && !flagNaki,
       "平和": (() {
+        final zihaiTanki = agariCal.where((w) => w.$2 == 6 && w.$1.$1 == 3 && w.$1.$2 < 4).map((m) => m.$1.$2); //　東 ～ 北.
+        final sangenpaiTanki = agariCal.where((w) => w.$2 == 6 && w.$1.$1 == 3 && w.$1.$2 >= 4).map((m) => m.$1.$2); //　白 ～ 中.
+        if (zihaiTanki.contains(detail.zikaze) || zihaiTanki.contains(detail.bakaze) || sangenpaiTanki.length != 0) {return false;}
         final melds = agariCal.map((m) => m.$2).toSet(); // meldでsetを作る.
         if (melds.length == 2 && melds.contains(0)) { // meld == 0(順子)が含まれて、順子と単騎だけの構成か.
           final keyPinhu = colectedAgarihai[detail.agari!];
@@ -212,6 +216,7 @@ class ScoreCalculator extends StatelessWidget {
   bool flagNaki;
   ScoreDetail detail;
   List<(int type, int tile)> colectedAgarihai;
+  void Function(int) sendScore;
 
   // 深いコピー.
   final List<Yaku> yaku = yakuList
@@ -404,9 +409,13 @@ class ScoreCalculator extends StatelessWidget {
     }
 
     // 符計算.
+    final nakiPinhu = agariCal.where((w) => w.$2 == 0 || w.$2 == 2 || w.$2 == 6);
     if (yakuFlag["平和"] ?? false) { // 平和なら.
       if (flagRon) {sumFuScore += 30;}
       if (flagTsumo) {sumFuScore += 20;}
+    }
+    else if (flagNaki && nakiPinhu.length == agariCal.length) { // 鳴き平和なら.
+      sumFuScore += 30;
     }
     else if (yakuFlag["七対子"] ?? false) { // 七対子なら.
       sumFuScore += 25;
@@ -723,135 +732,145 @@ class ScoreCalculator extends StatelessWidget {
     // 点数計算.
     if (detail.zikaze == 0) { // 親なら.
       if (sumFuScore == 20){
-        if (sumHanScore == 2) {sumScore = "2100 (700)";}
-        if (sumHanScore == 3) {sumScore = "3900 (1300)";}
-        if (sumHanScore == 4) {sumScore = "7800 (2600)";}
+        if (sumHanScore == 2) {sumScore = "2100 (700)"; sendScore(2100);}
+        if (sumHanScore == 3) {sumScore = "3900 (1300)"; sendScore(3900);}
+        if (sumHanScore == 4) {sumScore = "7800 (2600)"; sendScore(7800);}
       } else if (sumFuScore == 25){
-        if (sumHanScore == 2) {sumScore = flagRon ? "2400" : "2400 (800)";}
-        if (sumHanScore == 3) {sumScore = flagRon ? "4800" : "4800 (1600)";}
-        if (sumHanScore == 4) {sumScore = flagRon ? "9600" : "9600 (3200)";}
+        if (sumHanScore == 2) {sumScore = flagRon ? "2400" : "2400 (800)"; sendScore(2400);}
+        if (sumHanScore == 3) {sumScore = flagRon ? "4800" : "4800 (1600)"; sendScore(4800);}
+        if (sumHanScore == 4) {sumScore = flagRon ? "9600" : "9600 (3200)"; sendScore(9600);}
       } else if (sumFuScore == 30){
-        if (sumHanScore == 1) {sumScore = flagRon ? "1500" : "1500 (500)";}
-        if (sumHanScore == 2) {sumScore = flagRon ? "2900" : "3000 (1000)";}
-        if (sumHanScore == 3) {sumScore = flagRon ? "5800" : "6000 (2000)";}
-        if (sumHanScore == 4) {sumScore = flagRon ? "11600" : "11700 (3900)";}
+        if (sumHanScore == 1) {sumScore = flagRon ? "1500" : "1500 (500)"; sendScore(1500);}
+        if (sumHanScore == 2) {sumScore = flagRon ? "2900" : "3000 (1000)"; sendScore(2900);} //.
+        if (sumHanScore == 3) {sumScore = flagRon ? "5800" : "6000 (2000)"; sendScore(5800);} //.
+        if (sumHanScore == 4) {sumScore = flagRon ? "11600" : "11700 (3900)"; sendScore(11600);} //.
       } else if (sumFuScore == 40){
-        if (sumHanScore == 1) {sumScore = flagRon ? "2000" : "2100 (700)";}
-        if (sumHanScore == 2) {sumScore = flagRon ? "3900" : "3900 (1300)";}
-        if (sumHanScore == 3) {sumScore = flagRon ? "7700" : "7800 (2600)";}
-        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)";}
+        if (sumHanScore == 1) {sumScore = flagRon ? "2000" : "2100 (700)"; sendScore(2000);} //.
+        if (sumHanScore == 2) {sumScore = flagRon ? "3900" : "3900 (1300)"; sendScore(3900);}
+        if (sumHanScore == 3) {sumScore = flagRon ? "7700" : "7800 (2600)"; sendScore(7700);} //.
+        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)"; sendScore(12000);}
       } else if (sumFuScore == 50){
-        if (sumHanScore == 1) {sumScore = flagRon ? "2400" : "2400 (800)";}
-        if (sumHanScore == 2) {sumScore = flagRon ? "4800" : "4800 (1600)";}
-        if (sumHanScore == 3) {sumScore = flagRon ? "9600" : "9600 (3200)";}
-        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)";}
+        if (sumHanScore == 1) {sumScore = flagRon ? "2400" : "2400 (800)"; sendScore(2400);}
+        if (sumHanScore == 2) {sumScore = flagRon ? "4800" : "4800 (1600)"; sendScore(4800);}
+        if (sumHanScore == 3) {sumScore = flagRon ? "9600" : "9600 (3200)"; sendScore(9600);}
+        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)"; sendScore(12000);}
       } else if (sumFuScore == 60){
-        if (sumHanScore == 1) {sumScore = flagRon ? "2900" : "3000 (1000)";}
-        if (sumHanScore == 2) {sumScore = flagRon ? "5800" : "6000 (2000)";}
-        if (sumHanScore == 3) {sumScore = flagRon ? "11600" : "11700 (3900)";}
-        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)";}
+        if (sumHanScore == 1) {sumScore = flagRon ? "2900" : "3000 (1000)"; sendScore(2900);} //.
+        if (sumHanScore == 2) {sumScore = flagRon ? "5800" : "6000 (2000)"; sendScore(5800);} //.
+        if (sumHanScore == 3) {sumScore = flagRon ? "11600" : "11700 (3900)"; sendScore(11600);} //.
+        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)"; sendScore(12000);}
       } else if (sumFuScore == 70){
-        if (sumHanScore == 1) {sumScore = flagRon ? "3400" : "3600 (1200)";}
-        if (sumHanScore == 2) {sumScore = flagRon ? "6800" : "6900 (2300)";}
-        if (sumHanScore == 3) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)";}
-        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)";}
+        if (sumHanScore == 1) {sumScore = flagRon ? "3400" : "3600 (1200)"; sendScore(3400);} //.
+        if (sumHanScore == 2) {sumScore = flagRon ? "6800" : "6900 (2300)"; sendScore(6800);} //.
+        if (sumHanScore == 3) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)"; sendScore(12000);}
+        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)"; sendScore(12000);}
       } else if (sumFuScore == 80){
-        if (sumHanScore == 1) {sumScore = flagRon ? "3900" : "3900 (1300)";}
-        if (sumHanScore == 2) {sumScore = flagRon ? "7700" : "7800 (2600)";}
-        if (sumHanScore == 3) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)";}
-        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)";}
+        if (sumHanScore == 1) {sumScore = flagRon ? "3900" : "3900 (1300)"; sendScore(3900);}
+        if (sumHanScore == 2) {sumScore = flagRon ? "7700" : "7800 (2600)"; sendScore(7700);} //.
+        if (sumHanScore == 3) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)"; sendScore(12000);}
+        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)"; sendScore(12000);}
       } else if (sumFuScore == 90){
-        if (sumHanScore == 1) {sumScore = flagRon ? "4400" : "4500 (1500)";}
-        if (sumHanScore == 2) {sumScore = flagRon ? "8700" : "8700 (2900)";}
-        if (sumHanScore == 3) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)";}
-        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)";}
+        if (sumHanScore == 1) {sumScore = flagRon ? "4400" : "4500 (1500)"; sendScore(4400);} //.
+        if (sumHanScore == 2) {sumScore = flagRon ? "8700" : "8700 (2900)"; sendScore(8700);}
+        if (sumHanScore == 3) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)"; sendScore(12000);}
+        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)"; sendScore(12000);}
       } else if (sumFuScore == 100){
-        if (sumHanScore == 1) {sumScore = flagRon ? "4800" : "4800 (1600)";}
-        if (sumHanScore == 2) {sumScore = flagRon ? "9600" : "9600 (3200)";}
-        if (sumHanScore == 3) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)";}
-        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)";}
+        if (sumHanScore == 1) {sumScore = flagRon ? "4800" : "4800 (1600)"; sendScore(4800);}
+        if (sumHanScore == 2) {sumScore = flagRon ? "9600" : "9600 (3200)"; sendScore(9600);}
+        if (sumHanScore == 3) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)"; sendScore(12000);}
+        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)"; sendScore(12000);}
       } else if (sumFuScore == 110){
-        if (sumHanScore == 1) {sumScore = flagRon ? "5300" : "5400 (1800)";}
-        if (sumHanScore == 2) {sumScore = flagRon ? "10600" : "10800 (3600)";}
-        if (sumHanScore == 3) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)";}
-        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)";}
+        if (sumHanScore == 1) {sumScore = flagRon ? "5300" : "5400 (1800)"; sendScore(5300);} //.
+        if (sumHanScore == 2) {sumScore = flagRon ? "10600" : "10800 (3600)"; sendScore(10600);} //.
+        if (sumHanScore == 3) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)"; sendScore(12000);}
+        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)"; sendScore(12000);}
       }
       if (sumHanScore == 5) {
         sumScore = flagRon ? "満貫 (12000)" : "満貫 (4000)";
+         sendScore(12000);
       } else if (sumHanScore == 6 || sumHanScore == 7) {
         sumScore = flagRon ? "跳満 (18000)" : "跳満 (6000)";
+         sendScore(18000);
       } else if (sumHanScore == 8 || sumHanScore == 9 || sumHanScore == 10) {
         sumScore = flagRon ? "倍満 (24000)" : "倍満 (8000)";
+         sendScore(24000);
       } else if (sumHanScore == 11 || sumHanScore == 12) {
         sumScore = flagRon ? "三倍満 (36000)" : "三倍満 (12000)";
+         sendScore(36000);
       } else if (sumHanScore > 12) {
         sumScore = flagRon ? "数え役満 (48000)" : "数え役満 (16000)";
+         sendScore(48000);
       }
     } else {
       if (sumFuScore == 20) { // ピンフツモのみ
-        if (sumHanScore == 2) {sumScore = "1500 (400/700)";}
-        if (sumHanScore == 3) {sumScore = "2700 (700/1300)";}
-        if (sumHanScore == 4) {sumScore = "5200 (1300/2600)";}
+        if (sumHanScore == 2) {sumScore = "1500 (400/700)"; sendScore(1400);}
+        if (sumHanScore == 3) {sumScore = "2700 (700/1300)"; sendScore(2600);}
+        if (sumHanScore == 4) {sumScore = "5200 (1300/2600)"; sendScore(5200);}
       } else if (sumFuScore == 25) {
-        if (sumHanScore == 2) {sumScore = flagRon ? "1600" : "1600 (400/800)";}
-        if (sumHanScore == 3) {sumScore = flagRon ? "3200" : "3200 (800/1600)";}
-        if (sumHanScore == 4) {sumScore = flagRon ? "6400" : "6400 (1600/3200)";}
+        if (sumHanScore == 2) {sumScore = flagRon ? "1600" : "1600 (400/800)"; sendScore(1600);}
+        if (sumHanScore == 3) {sumScore = flagRon ? "3200" : "3200 (800/1600)"; sendScore(3200);}
+        if (sumHanScore == 4) {sumScore = flagRon ? "6400" : "6400 (1600/3200)"; sendScore(6400);}
       } else if (sumFuScore == 30) {
-        if (sumHanScore == 1) {sumScore = flagRon ? "1000" : "1100 (300/500)";}
-        if (sumHanScore == 2) {sumScore = flagRon ? "2000" : "2000 (500/1000)";}
-        if (sumHanScore == 3) {sumScore = flagRon ? "3900" : "4000 (1000/2000)";}
-        if (sumHanScore == 4) {sumScore = flagRon ? "7700" : "7900 (2000/3900)";}
+        if (sumHanScore == 1) {sumScore = flagRon ? "1000" : "1100 (300/500)"; sendScore(1000);} //.
+        if (sumHanScore == 2) {sumScore = flagRon ? "2000" : "2000 (500/1000)"; sendScore(2000);}
+        if (sumHanScore == 3) {sumScore = flagRon ? "3900" : "4000 (1000/2000)"; sendScore(3900);} //.
+        if (sumHanScore == 4) {sumScore = flagRon ? "7700" : "7900 (2000/3900)"; sendScore(7700);} //.
       } else if (sumFuScore == 40) {
-        if (sumHanScore == 1) {sumScore = flagRon ? "1300" : "1500 (400/700)";}
-        if (sumHanScore == 2) {sumScore = flagRon ? "2600" : "2700 (700/1300)";}
-        if (sumHanScore == 3) {sumScore = flagRon ? "5200" : "5200 (1300/2600)";}
-        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)";}
+        if (sumHanScore == 1) {sumScore = flagRon ? "1300" : "1500 (400/700)"; sendScore(1300);} //.
+        if (sumHanScore == 2) {sumScore = flagRon ? "2600" : "2700 (700/1300)"; sendScore(2600);} //.
+        if (sumHanScore == 3) {sumScore = flagRon ? "5200" : "5200 (1300/2600)"; sendScore(5200);}
+        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)"; sendScore(8000);}
       } else if (sumFuScore == 50) {
-        if (sumHanScore == 1) {sumScore = flagRon ? "1600" : "1600 (400/800)";}
-        if (sumHanScore == 2) {sumScore = flagRon ? "3200" : "3200 (800/1600)";}
-        if (sumHanScore == 3) {sumScore = flagRon ? "6400" : "6400 (1600/3200)";}
-        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)";}
+        if (sumHanScore == 1) {sumScore = flagRon ? "1600" : "1600 (400/800)"; sendScore(1600);}
+        if (sumHanScore == 2) {sumScore = flagRon ? "3200" : "3200 (800/1600)"; sendScore(3200);}
+        if (sumHanScore == 3) {sumScore = flagRon ? "6400" : "6400 (1600/3200)"; sendScore(6400);}
+        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)"; sendScore(8000);}
       } else if (sumFuScore == 60) {
-        if (sumHanScore == 1) {sumScore = flagRon ? "2000" : "2000 (500/1000)";}
-        if (sumHanScore == 2) {sumScore = flagRon ? "3900" : "4000 (1000/2000)";}
-        if (sumHanScore == 3) {sumScore = flagRon ? "7700" : "7900 (2000/3900)";}
-        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)";}
+        if (sumHanScore == 1) {sumScore = flagRon ? "2000" : "2000 (500/1000)"; sendScore(2000);}
+        if (sumHanScore == 2) {sumScore = flagRon ? "3900" : "4000 (1000/2000)"; sendScore(3900);} //.
+        if (sumHanScore == 3) {sumScore = flagRon ? "7700" : "7900 (2000/3900)"; sendScore(7700);} //.
+        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)"; sendScore(8000);}
       } else if (sumFuScore == 70) {
-        if (sumHanScore == 1) {sumScore = flagRon ? "2300" : "2400 (600/1200)";}
-        if (sumHanScore == 2) {sumScore = flagRon ? "4500" : "4700 (1200/2300)";}
-        if (sumHanScore == 3) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)";}
-        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)";}
+        if (sumHanScore == 1) {sumScore = flagRon ? "2300" : "2400 (600/1200)"; sendScore(2300);} //.
+        if (sumHanScore == 2) {sumScore = flagRon ? "4500" : "4700 (1200/2300)"; sendScore(4500);} //.
+        if (sumHanScore == 3) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)"; sendScore(8000);}
+        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)"; sendScore(8000);}
       } else if (sumFuScore == 80) {
-        if (sumHanScore == 1) {sumScore = flagRon ? "2600" : "2300 (700/1300)";}
-        if (sumHanScore == 2) {sumScore = flagRon ? "5200" : "5200 (1300/2600)";}
-        if (sumHanScore == 3) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)";}
-        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)";}
+        if (sumHanScore == 1) {sumScore = flagRon ? "2600" : "2700 (700/1300)"; sendScore(2600);} //.
+        if (sumHanScore == 2) {sumScore = flagRon ? "5200" : "5200 (1300/2600)"; sendScore(5200);}
+        if (sumHanScore == 3) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)"; sendScore(8000);}
+        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)"; sendScore(8000);}
       } else if (sumFuScore == 90) {
-        if (sumHanScore == 1) {sumScore = flagRon ? "2900" : "3100 (800/1500)";}
-        if (sumHanScore == 2) {sumScore = flagRon ? "5800" : "5900 (1500/2900)";}
-        if (sumHanScore == 3) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)";}
-        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)";}
+        if (sumHanScore == 1) {sumScore = flagRon ? "2900" : "3100 (800/1500)"; sendScore(2900);} //.
+        if (sumHanScore == 2) {sumScore = flagRon ? "5800" : "5900 (1500/2900)"; sendScore(5800);} //.
+        if (sumHanScore == 3) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)"; sendScore(8000);}
+        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)"; sendScore(8000);}
       } else if (sumFuScore == 100) {
-        if (sumHanScore == 1) {sumScore = flagRon ? "3200" : "3200 (800/1600)";}
-        if (sumHanScore == 2) {sumScore = flagRon ? "6400" : "6400 (1600/3200)";}
-        if (sumHanScore == 3) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)";}
-        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)";}
+        if (sumHanScore == 1) {sumScore = flagRon ? "3200" : "3200 (800/1600)"; sendScore(3200);}
+        if (sumHanScore == 2) {sumScore = flagRon ? "6400" : "6400 (1600/3200)"; sendScore(6400);}
+        if (sumHanScore == 3) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)"; sendScore(8000);}
+        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)"; sendScore(8000);}
       } else if (sumFuScore == 110) {
-        if (sumHanScore == 1) {sumScore = flagRon ? "3600" : "3600 (900/1800)";}
-        if (sumHanScore == 2) {sumScore = flagRon ? "7100" : "7200 (1800/3600)";}
-        if (sumHanScore == 3) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)";}
-        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)";}
+        if (sumHanScore == 1) {sumScore = flagRon ? "3600" : "3600 (900/1800)"; sendScore(3600);}
+        if (sumHanScore == 2) {sumScore = flagRon ? "7100" : "7200 (1800/3600)"; sendScore(7100);} //.
+        if (sumHanScore == 3) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)"; sendScore(8000);}
+        if (sumHanScore == 4) {sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)"; sendScore(8000);}
       }
       if (sumHanScore == 5) {
         sumScore = flagRon ? "満貫 (8000)" : "満貫 (2000/4000)";
+         sendScore(8000);
       } else if (sumHanScore == 6 || sumHanScore == 7) {
         sumScore = flagRon ? "跳満 (12000)" : "跳満 (3000/6000)";
+         sendScore(12000);
       } else if (sumHanScore == 8 || sumHanScore == 9 || sumHanScore == 10) {
         sumScore = flagRon ? "倍満 (16000)" : "倍満 (4000/8000)";
+         sendScore(16000);
       } else if (sumHanScore == 11 || sumHanScore == 12) {
         sumScore = flagRon ? "三倍満 (24000)" : "三倍満 (6000/12000)";
+         sendScore(24000);
       } else if (sumHanScore > 12) {
         sumScore = flagRon ? "数え役満 (32000)" : "数え役満 (8000/16000)";
+         sendScore(32000);
       }
     }
 

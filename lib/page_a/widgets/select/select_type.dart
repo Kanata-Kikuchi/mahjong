@@ -54,29 +54,3 @@ class SelectType extends StatelessWidget {
     );
   }
 }
-
-
-            // return ElevatedButton(
-            //   style: ElevatedButton.styleFrom(
-            //     backgroundColor: Colors.white,
-            //     foregroundColor: Colors.black,
-            //     padding: EdgeInsets.all(5), //ボタンの中のアイコンの大きさ.
-            //     shape: RoundedRectangleBorder(
-            //       borderRadius: BorderRadius.circular(8),
-            //       side: const BorderSide(color: Colors.red),
-            //     ),
-            //     elevation: 3,
-            //   ),
-
-            //   /* 親でsetState(() {})を実行して状態を管理するために、ボタンそれぞれにindexを引数とするonChagedを渡す。
-            //   親側で_selectTypeを用意して押されたボタンのindexを管理しSelectTilesに渡す。 */
-            //   onPressed: () => onChanged(index),
-
-            //   child: Padding(
-            //     padding: EdgeInsets.all(0),
-            //     child: Image.asset(
-            //       tileIcon[index],
-            //       fit: BoxFit.contain,
-            //     )
-            //   )
-            // );
