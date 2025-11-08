@@ -45,7 +45,7 @@ class ScoreCalculator extends StatelessWidget {
         return melds.toSet().length == melds.length - 1; // toSet()で個数が1減れば.
       })(),
       "東": (() {
-        final ton = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 0 && w.$2 != 6);
+        final ton = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 0 && w.$2 != 6).map((m) => m.$1.$2);
         if (ton.contains(detail.bakaze)) { // ダブ東回避.
           return !ton.contains(detail.zikaze);
         } else if (!ton.contains(detail.bakaze)) {
@@ -54,7 +54,7 @@ class ScoreCalculator extends StatelessWidget {
         return false;
       })(),
       "南": (() {
-        final nan = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 1 && w.$2 != 6);
+        final nan = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 1 && w.$2 != 6).map((m) => m.$1.$2);
         if (nan.contains(detail.bakaze)) { // ダブ南回避.
           return !nan.contains(detail.zikaze);
         } else if (!nan.contains(detail.bakaze)) {
@@ -63,7 +63,7 @@ class ScoreCalculator extends StatelessWidget {
         return false;
       })(),
       "西": (() {
-        final sya = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 2 && w.$2 != 6);
+        final sya = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 2 && w.$2 != 6).map((m) => m.$1.$2);
         if (sya.contains(detail.bakaze)) { // ダブ西回避.
           return !sya.contains(detail.zikaze);
         } else if (!sya.contains(detail.bakaze)) {
@@ -72,31 +72,31 @@ class ScoreCalculator extends StatelessWidget {
         return false;
       })(),
       "北": (() {
-        final pei = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 3 && w.$2 != 6);
+        final pei = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 3 && w.$2 != 6).map((m) => m.$1.$2);
         return pei.contains(detail.zikaze);
       })(),
       "白": (() {
-        final haku = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 4 && w.$2 != 6);
-        return haku.contains(detail.zikaze);
+        final haku = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 4 && w.$2 != 6).map((m) => m.$1.$2);
+        return haku.length == 1;
       })(),
       "発": (() {
-        final hatsu = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 5 && w.$2 != 6);
-        return hatsu.contains(detail.zikaze);
+        final hatsu = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 5 && w.$2 != 6).map((m) => m.$1.$2);
+        return hatsu.length == 1;
       })(),
       "中": (() {
-        final tyun = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 6 && w.$2 != 6);
-        return tyun.contains(detail.zikaze);
+        final tyun = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 6 && w.$2 != 6).map((m) => m.$1.$2);
+        return tyun.length == 1;
       })(),
       "ダブ東": (() {
-        final dabuton = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 0 && w.$2 != 6);
+        final dabuton = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 0 && w.$2 != 6).map((m) => m.$1.$2);
         return dabuton.contains(detail.bakaze) && dabuton.contains(detail.zikaze);
       })(),
       "ダブ南": (() {
-        final dabunan = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 0 && w.$2 != 6);
+        final dabunan = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 1 && w.$2 != 6).map((m) => m.$1.$2);
         return dabunan.contains(detail.bakaze) && dabunan.contains(detail.zikaze);
       })(),
       "ダブ西": (() {
-        final dabusya = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 0 && w.$2 != 6);
+        final dabusya = agariCal.where((w) => w.$1.$1 == 3 && w.$1.$2 == 2 && w.$2 != 6).map((m) => m.$1.$2);
         return dabusya.contains(detail.bakaze) && dabusya.contains(detail.zikaze);
       })(),
       "三色同順": (() {
@@ -267,8 +267,35 @@ class ScoreCalculator extends StatelessWidget {
       if (yakuFlag["断么九"] ?? false) {
         yaku.firstWhere((i) => i.name == "断么九").selected = true;
       }
-      if (yakuFlag["役牌"] ?? false) {
-        yaku.firstWhere((i) => i.name == "役牌").selected = true;
+      if (yakuFlag["東"] ?? false) {
+        yaku.firstWhere((i) => i.name == "東").selected = true;
+      }
+      if (yakuFlag["南"] ?? false) {
+        yaku.firstWhere((i) => i.name == "南").selected = true;
+      }
+      if (yakuFlag["西"] ?? false) {
+        yaku.firstWhere((i) => i.name == "西").selected = true;
+      }
+      if (yakuFlag["北"] ?? false) {
+        yaku.firstWhere((i) => i.name == "北").selected = true;
+      }
+      if (yakuFlag["白"] ?? false) {
+        yaku.firstWhere((i) => i.name == "白").selected = true;
+      }
+      if (yakuFlag["発"] ?? false) {
+        yaku.firstWhere((i) => i.name == "発").selected = true;
+      }
+      if (yakuFlag["中"] ?? false) {
+        yaku.firstWhere((i) => i.name == "中").selected = true;
+      }
+      if (yakuFlag["ダブ東"] ?? false) {
+        yaku.firstWhere((i) => i.name == "ダブ東").selected = true;
+      }
+      if (yakuFlag["ダブ南"] ?? false) {
+        yaku.firstWhere((i) => i.name == "ダブ南").selected = true;
+      }
+      if (yakuFlag["ダブ西"] ?? false) {
+        yaku.firstWhere((i) => i.name == "ダブ西").selected = true;
       }
       if (yakuFlag["一盃口"] ?? false) {
         yaku.firstWhere((i) => i.name == "一盃口").selected = true;

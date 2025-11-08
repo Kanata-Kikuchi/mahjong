@@ -97,7 +97,7 @@ class _SelectPageState extends State<SelectPage> {
       }
 
       final bufReachStick = drawResult[0].length;
-      setState(() {
+      setState(() { // 本場の管理.
        _gameStick += 1;
        _reachStick += bufReachStick;
       });
@@ -110,34 +110,54 @@ class _SelectPageState extends State<SelectPage> {
     }
   }
 
-  void _closedPopup((int i, int k, int u)? r) {
+  void _closedCalPopup((int i, int k, int u, List<int>? s)? r) {
     if (r != null) {
+      print("keisa");
       final winner = detail!.zikaze; // 誰がアガリか.
+      final reachPlayer = r.$4 != null ? r.$4!.length : 0; // このアガリのリーチ棒数.
+      final flag = detail!.flagRon ? 300 : 100; // ロンなら３００点、ツモなら１００点.
+      final honba = _gameStick * flag; // 本場.
+      final kyoutaku = (_reachStick + reachPlayer) * 1000 + (_gameStick * flag); // リーチ棒＋本場.
 
       // ロンアガリ.
-      if (r.$1 == 0) { // (0, score, playersMap.keys.singleWhere((w) => playersMap[w] == notWinnerPlayer[_selected.first])).
+      if (r.$1 == 0) { // (0, score, playersMap.keys.singleWhere((w) => playersMap[w] == notWinnerPlayer[_selected.first]), _selectedReach.isNotEmpty ? _selectedReach.toList() : null).
         setState(() {
-          players.firstWhere((w) => w.zikaze == winner).score += r.$2;
-          players.firstWhere((w) => w.index == r.$3).score -= r.$2; //$3はPlayerのindexに相当.
+          players.firstWhere((w) => w.zikaze == winner).score += r.$2 + kyoutaku;
+          players.firstWhere((w) => w.index == r.$3).score -= r.$2 + honba; //$3はPlayerのindexに相当.
         });
       }
       // 親のツモアガリ.
-      else if (r.$1 == 1) { // (1, childrenScore, 0).
+      else if (r.$1 == 1) { // (1, childrenScore, 0, _selectedReach.isNotEmpty ? _selectedReach.toList() : null).
         setState(() {
-          players.firstWhere((w) => w.zikaze == 0).score += (r.$2 * 3);
-          players.where((w) => w.zikaze != 0).forEach((e) => e.score -= r.$2);
+          players.firstWhere((w) => w.zikaze == 0).score += (r.$2 * 3) + kyoutaku;
+          players.where((w) => w.zikaze != 0).forEach((e) => e.score -= r.$2 + honba);
         });
       }
       // 子のツモアガリ.
-      else { // (2, childScore, hostScore).
+      else { // (2, childScore, hostScore, _selectedReach.isNotEmpty ? _selectedReach.toList() : null).
         setState(() {
-          players.firstWhere((w) => w.zikaze == winner).score += (r.$2 * 2) + r.$3;
-          players.firstWhere((w) => w.zikaze == 0).score -= r.$3;
-          players.where((w) => w.zikaze != 0 && w.zikaze != winner).forEach((e) => e.score -= r.$2);
+          players.firstWhere((w) => w.zikaze == winner).score += (r.$2 * 2) + r.$3 + kyoutaku;
+          players.firstWhere((w) => w.zikaze == 0).score -= r.$3 + honba;
+          players.where((w) => w.zikaze != 0 && w.zikaze != winner).forEach((e) => e.score -= r.$2 + honba);
         });
       }
 
-      if (winner != 0) {_roundProgress();}
+      setState(() { // リーチ棒のリセット.
+        if (r.$4 != null) {
+          for (int i in r.$4!) { // リーチした人から１０００点引く.
+            players.firstWhere((w) => w.index == i).score -= 1000;
+            print("${r.$4} $i");
+          }
+        }
+        _reachStick = 0;
+      });
+
+      if (winner != 0) { // 親以外がアガリ.
+        setState(() {
+          _gameStick = 0; // 本場のリセット.
+        });
+        _roundProgress();
+      }
     }
   }
 
@@ -155,7 +175,7 @@ class _SelectPageState extends State<SelectPage> {
           players: players
         )
       );
-      _closedPopup(r);
+      _closedCalPopup(r);
     });
   }
 

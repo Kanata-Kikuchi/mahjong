@@ -31,6 +31,7 @@ class _CalPopupState extends State<CalPopup> {
   int zikaze = 0;
   final notWinnerPlayer = [];
   Map<int, String> playersMap = {};
+  Set<int> _selectedReach = {};
 
   void _subTsumo(int score) { // ツモの場合の点数分配.
     if (zikaze == 0) { // 親なら.
@@ -47,24 +48,19 @@ class _CalPopupState extends State<CalPopup> {
       }
     } else { // 子なら.
       int bufScore = score ~/ 100;
-      print(bufScore);
       if (bufScore % 4 == 0) {
-        print("object");
         hostScore = score ~/ 2;
         childScore = score ~/ 4;
       } else if (bufScore % 2 == 0) { // 1000、2600、5800.
-        print("10 25 58");
         hostScore = score ~/ 2;
         childScore = (hostScore + 100) ~/ 2;
       } else {
         bufScore += 1;
         score += 100;
         if (bufScore % 4 == 0) { // 2300、3900、7100.
-          print("23 39 71");
           hostScore = score ~/ 2;
           childScore = score ~/ 4;
         } else { // 1300、2900、4500、7700.
-          print("13 29 45 77");
           hostScore = score ~/ 2;
           childScore = (hostScore + 100) ~/ 2;
         }
@@ -106,7 +102,6 @@ class _CalPopupState extends State<CalPopup> {
 
   @override
   Widget build(BuildContext context) {
-
     return Dialog(
       insetPadding: EdgeInsets.symmetric(horizontal: 350, vertical: 50),
       child: Padding(
@@ -117,13 +112,15 @@ class _CalPopupState extends State<CalPopup> {
               "${widget.round}",
               style: TextStyle(fontSize: 25),
             ),
-            SizedBox(height: 50),
+            SizedBox(height: 25),
+            /***************************************************************************/
             if (widget.detail?.flagRon == true) ...[ // ロンなら.
               Text(
                 "$score 点", // 点数.
                 style: TextStyle(fontSize: 40),
               ),
-              SizedBox(height: 50),
+              SizedBox(height: 25),
+            /***************************************************************************/
               Row(
                 children: [
                   SizedBox(width: 80),
@@ -167,6 +164,58 @@ class _CalPopupState extends State<CalPopup> {
                 ],
               ),
               SizedBox(height: 50),
+            /***************************************************************************/
+              Row(
+                children: [
+                  SizedBox(width: 25),
+                  Text("リーチ者")
+                ],
+              ),
+              SizedBox(height: 10),
+              Row( // リーチ者選択.
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SegmentedButton(
+                    showSelectedIcon: false,
+                    segments: [
+                      ButtonSegment(
+                        value: 0,
+                        label: SizedBox(
+                          width: 80,
+                          child: Text(widget.players[0].name)
+                        )
+                      ),
+                      ButtonSegment(
+                        value: 1,
+                        label: SizedBox(
+                          width: 80,
+                          child: Text(widget.players[1].name)
+                        )
+                      ),
+                      ButtonSegment(
+                        value: 2,
+                        label: SizedBox(
+                          width: 80,
+                          child: Text(widget.players[2].name)
+                        )
+                      ),
+                      ButtonSegment(
+                        value: 3,
+                        label: SizedBox(
+                          width: 80,
+                          child: Text(widget.players[3].name)
+                        )
+                      )
+                    ],
+                    multiSelectionEnabled: true,
+                    emptySelectionAllowed: true,
+                    selected: _selectedReach,
+                    onSelectionChanged: (s) => setState(() => _selectedReach = s),
+                  )
+                ],
+              ),
+              SizedBox(height: 50),
+            /***************************************************************************/
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -179,20 +228,75 @@ class _CalPopupState extends State<CalPopup> {
                     onPressed: () => Navigator.pop(context, (
                       0,
                       score,
-                      playersMap.keys.singleWhere((w) => playersMap[w] == notWinnerPlayer[_selected.first]) // ロンされた人
+                      playersMap.keys.singleWhere((w) => playersMap[w] == notWinnerPlayer[_selected.first]), // ロンされた人
+                      _selectedReach.isNotEmpty ? _selectedReach.toList() : null
                     )),
                     child: const Text('ロン'),
                   ),
                 ],
               )
             ]
+            /***************************************************************************/
             else if (widget.detail?.flagTsumo == true) ...[ // ツモなら.
+            /***************************************************************************/
               if (widget.detail?.zikaze == 0) ...[ // 親なら.
                 Text(
                   "$childrenScore 点 オール", // 点数.
                   style: TextStyle(fontSize: 40),
                 ),
+                SizedBox(height: 25),
+              /***************************************************************************/
+                Row(
+                  children: [
+                    SizedBox(width: 25),
+                    Text("リーチ者")
+                  ],
+                ),
+                SizedBox(height: 10),
+                Row( // リーチ者選択.
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SegmentedButton(
+                      showSelectedIcon: false,
+                      segments: [
+                        ButtonSegment(
+                          value: 0,
+                          label: SizedBox(
+                            width: 80,
+                            child: Text(widget.players[0].name)
+                          )
+                        ),
+                        ButtonSegment(
+                          value: 1,
+                          label: SizedBox(
+                            width: 80,
+                            child: Text(widget.players[1].name)
+                          )
+                        ),
+                        ButtonSegment(
+                          value: 2,
+                          label: SizedBox(
+                            width: 80,
+                            child: Text(widget.players[2].name)
+                          )
+                        ),
+                        ButtonSegment(
+                          value: 3,
+                          label: SizedBox(
+                            width: 80,
+                            child: Text(widget.players[3].name)
+                          )
+                        )
+                      ],
+                      multiSelectionEnabled: true,
+                      emptySelectionAllowed: true,
+                      selected: _selectedReach,
+                      onSelectionChanged: (s) => setState(() => _selectedReach = s),
+                    )
+                  ],
+                ),
                 SizedBox(height: 50),
+              /***************************************************************************/
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -205,18 +309,72 @@ class _CalPopupState extends State<CalPopup> {
                       onPressed: () => Navigator.pop(context, (
                         1,
                         childrenScore,
-                        0 // ３個目の値は使わない、個数合わせ.
+                        0, // ３個目の値は使わない、個数合わせ.
+                        _selectedReach.isNotEmpty ? _selectedReach.toList() : null
                       )),
                       child: const Text('ツモ'),
                     ),
                   ],
                 )
+              /***************************************************************************/
               ] else ...[ // 子なら.
                 Text(
                   "$childScore / $hostScore 点", // 点数.
                   style: TextStyle(fontSize: 40),
                 ),
+                SizedBox(height: 25),
+              /***************************************************************************/
+                Row(
+                  children: [
+                    SizedBox(width: 25),
+                    Text("リーチ者")
+                  ],
+                ),
+                SizedBox(height: 10),
+                Row( // リーチ者選択.
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SegmentedButton(
+                      showSelectedIcon: false,
+                      segments: [
+                        ButtonSegment(
+                          value: 0,
+                          label: SizedBox(
+                            width: 80,
+                            child: Text(widget.players[0].name)
+                          )
+                        ),
+                        ButtonSegment(
+                          value: 1,
+                          label: SizedBox(
+                            width: 80,
+                            child: Text(widget.players[1].name)
+                          )
+                        ),
+                        ButtonSegment(
+                          value: 2,
+                          label: SizedBox(
+                            width: 80,
+                            child: Text(widget.players[2].name)
+                          )
+                        ),
+                        ButtonSegment(
+                          value: 3,
+                          label: SizedBox(
+                            width: 80,
+                            child: Text(widget.players[3].name)
+                          )
+                        )
+                      ],
+                      multiSelectionEnabled: true,
+                      emptySelectionAllowed: true,
+                      selected: _selectedReach,
+                      onSelectionChanged: (s) => setState(() => _selectedReach = s),
+                    )
+                  ],
+                ),
                 SizedBox(height: 50),
+              /***************************************************************************/
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -229,7 +387,8 @@ class _CalPopupState extends State<CalPopup> {
                       onPressed: () => Navigator.pop(context, (
                         2,
                         childScore,
-                        hostScore
+                        hostScore,
+                        _selectedReach.isNotEmpty ? _selectedReach.toList() : null
                       )),
                       child: const Text('ツモ'),
                     ),

@@ -32,7 +32,10 @@ class _GamePopupState extends State<GamePopup> {
         padding: EdgeInsets.all(25),
         child: Column(
           children: [
-            Text("${widget.round}"),
+            Text(
+              "${widget.round}",
+              style: TextStyle(fontSize: 25),
+            ),
             SizedBox(height: 50),
             Row(
               children: [
@@ -81,7 +84,7 @@ class _GamePopupState extends State<GamePopup> {
                   selected: _selectedReach,
                   onSelectionChanged: (s) => setState(() {
                     _selectedReach = s;
-                    for (int i in _selectedReach) {
+                    for (int i in _selectedReach) { // リーチした人は聴牌だから.
                       _selectedTenpai.add(i+4);
                     }
                   }),
