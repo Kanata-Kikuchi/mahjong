@@ -23,7 +23,10 @@ class ScoreDetailIppatsu extends StatelessWidget {
             value: enabled ? value : false,
             onChanged: enabled ? onChanged : null, // 無効時は押せない
           ),
-          const Text('一発')
+          const Text(
+            '一発',
+            style: TextStyle(fontSize: 10)
+          )
         ],
       ),
     );

@@ -210,7 +210,7 @@ class _ScoreState extends State<Score> {
                 onChanged: _onChangedOyako
               ),
               SizedBox(height: sizeBoxSpace),
-              Text("オプション", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              Text("オプション", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center, // 縦中央で安定
                 children: [
@@ -288,7 +288,7 @@ class _ScoreState extends State<Score> {
                 onChanged: _onChangedOyako
               ),
               SizedBox(height: sizeBoxSpace),
-              Text("オプション", style: TextStyle(fontWeight: FontWeight.bold)),
+              Text("オプション", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [

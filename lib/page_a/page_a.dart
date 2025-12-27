@@ -641,7 +641,7 @@ class _PageAState extends State<PageA> {
               )
             )
           ),
-          Expanded(flex: 2,
+          Expanded(flex: 3,
             child: Column(children: [
               Expanded(flex: 2,
                 child: BoxB("Score", child:

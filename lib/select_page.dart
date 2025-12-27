@@ -199,7 +199,7 @@ class _SelectPageState extends State<SelectPage> {
       body: Row(
         children: [
           NavigationRail(
-            minWidth: 180,
+            minWidth: 50,
             selectedIndex: index,
             onDestinationSelected: (i) => setState(() => index=i),
             destinations: const [

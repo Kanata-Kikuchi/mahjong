@@ -21,7 +21,10 @@ class ScoreDetailDora extends StatelessWidget {
           icon: const Icon(Icons.remove),
           onPressed: doraCount > 0 ? onPressedRemove : null
         ),
-        Text('ドラ: $doraCount 枚'),
+        Text(
+          'ドラ: $doraCount 枚',
+          style: TextStyle(fontSize: 10)
+        ),
         IconButton( // ドラの最大値　４０.
           icon: const Icon(Icons.add),
           onPressed: doraCount < 40 ? onPressedAdd : null

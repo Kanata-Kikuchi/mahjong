@@ -27,7 +27,7 @@ class ScoreDetailToggle extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+        Text(title, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
         Row(
           children: [
             Radio<int>(
@@ -35,7 +35,10 @@ class ScoreDetailToggle extends StatelessWidget {
               groupValue: groupValue,
               onChanged: (i) => onChanged(i!)
             ),
-            Text(label0),
+            Text(
+              label0,
+              style: TextStyle(fontSize: 10)
+            ),
             if (label1 != null) ...[
               const SizedBox(width: 12),
               Radio<int>(
@@ -43,7 +46,10 @@ class ScoreDetailToggle extends StatelessWidget {
                 groupValue: groupValue,
                 onChanged: (i) => onChanged(i!)
               ),
-              Text(label1!),
+              Text(
+                label1!,
+                style: TextStyle(fontSize: 10)
+              ),
             ],
             if (label2 != null) ...[
               const SizedBox(width: 12),
@@ -52,7 +58,10 @@ class ScoreDetailToggle extends StatelessWidget {
                 groupValue: groupValue,
                 onChanged: (i) => onChanged(i!)
               ),
-              Text(label2!),
+              Text(
+                label2!,
+                style: TextStyle(fontSize: 10)
+              ),
             ],
             if (label3 != null) ...[
               const SizedBox(width: 12),
@@ -61,7 +70,10 @@ class ScoreDetailToggle extends StatelessWidget {
                 groupValue: groupValue,
                 onChanged: (i) => onChanged(i!)
               ),
-              Text(label3!),
+              Text(
+                label3!,
+                style: TextStyle(fontSize: 10)
+              ),
             ]
           ]
         ),

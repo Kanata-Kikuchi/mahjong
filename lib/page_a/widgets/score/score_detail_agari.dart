@@ -56,7 +56,10 @@ class ScoreDetailAgari extends StatelessWidget {
 
     return DropdownButton<int>(
       value: value,
-      hint: const Text("アガリ牌"),
+      hint: const Text(
+        "アガリ牌",
+        style: TextStyle(fontSize: 10)
+      ),
       items: items,
       alignment: Alignment.center,
       onChanged: (i) {
