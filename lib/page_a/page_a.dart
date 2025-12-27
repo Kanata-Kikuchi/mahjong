@@ -643,7 +643,7 @@ class _PageAState extends State<PageA> {
           ),
           Expanded(flex: 2,
             child: Column(children: [
-              Expanded(flex: 4,
+              Expanded(flex: 3,
                 child: BoxB("Score", child:
                   Score(
                     agariCal: _agariCal,

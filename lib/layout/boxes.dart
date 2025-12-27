@@ -35,8 +35,6 @@ class BoxB extends StatelessWidget {
 
     const double horizontal = 10;
     const double vertical = 20;
-    
-    Widget _test = ColoredBox(color: Colors.lightBlue, child: child,);
 
     return Stack(
       clipBehavior: Clip.none,
@@ -48,14 +46,10 @@ class BoxB extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.black26),
           ),
-          child: SizedBox(
-            // width: double.infinity,
-            // height: double.infinity,
-            child: _test
-          )
+          child: child
         ),
         Transform.translate(
-          offset: Offset(12, -10),
+          offset: Offset(12, 0),
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(

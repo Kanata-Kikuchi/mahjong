@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mahjong/page_a/data/images.dart';
-import 'package:mahjong/page_a/page_a.dart';
 import 'package:mahjong/select_page.dart';
 
 
@@ -15,7 +13,10 @@ Future<void> main() async {
     DeviceOrientation.landscapeRight,
   ]);
 
-  const app = MaterialApp(home: Home());
+  const app = MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Home()
+  );
   const scope = ProviderScope(child: app);
   runApp(scope);
 }
