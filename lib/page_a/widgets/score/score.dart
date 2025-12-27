@@ -152,158 +152,168 @@ class _ScoreState extends State<Score> {
         );
       }
     } else if (widget.flagTsumo) { // ツモが押されたら.
-      content = Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          flagNaki // 鳴いていたら.
-          ? ScoreDetailToggle(
-              title: "リーチ系",
-              label0: "なし",
-              groupValue: _reachDetail,
-              onChanged: _onChangedReach,
-            )
-          : ScoreDetailToggle(
-              title: "リーチ系",
-              label0: "なし",
-              label1: "リーチ",
-              label2: "ダブルリーチ",
-              groupValue: _reachDetail,
-              onChanged: _onChangedReach,
-            ),
-          SizedBox(height: sizeBoxSpace),
-          flagKan // 槓されていたら.
-          ? ScoreDetailToggle(
-              title: "ツモ系",
-              label0: "なし",
-              label1: "海底",
-              label2: "嶺上開花",
-              groupValue: _tsumoDetail,
-              onChanged: _onChangedTsumo,
-            )
-          : ScoreDetailToggle(
-              title: "ツモ系",
-              label0: "なし",
-              label1: "海底",
-              groupValue: _tsumoDetail,
-              onChanged: _onChangedTsumo,
-            ),
-          SizedBox(height: sizeBoxSpace),
-          ScoreDetailToggle(
-            title: "場風",
-            label0: "東場",
-            label1: "南場",
-            label2: "西場",
-            groupValue: _bakazeDetail,
-            onChanged: _onChangedBakaze
-          ),
-          SizedBox(height: sizeBoxSpace),
-          ScoreDetailToggle(
-            title: "自風",
-            label0: "東家",
-            label1: "南家",
-            label2: "西家",
-            label3: "北家",
-            groupValue: _oyakoDetail,
-            onChanged: _onChangedOyako
-          ),
-          SizedBox(height: sizeBoxSpace),
-          Text("オプション", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center, // 縦中央で安定
+      content = SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ScoreDetailDora( // ドラ.
-                doraCount: _doraDetail,
-                onPressedRemove: _onPressedRemove,
-                onPressedAdd: _onPressedAdd,
+              flagNaki // 鳴いていたら.
+              ? ScoreDetailToggle(
+                  title: "リーチ系",
+                  label0: "なし",
+                  groupValue: _reachDetail,
+                  onChanged: _onChangedReach,
+                )
+              : ScoreDetailToggle(
+                  title: "リーチ系",
+                  label0: "なし",
+                  label1: "リーチ",
+                  label2: "ダブルリーチ",
+                  groupValue: _reachDetail,
+                  onChanged: _onChangedReach,
+                ),
+              SizedBox(height: sizeBoxSpace),
+              flagKan // 槓されていたら.
+              ? ScoreDetailToggle(
+                  title: "ツモ系",
+                  label0: "なし",
+                  label1: "海底",
+                  label2: "嶺上開花",
+                  groupValue: _tsumoDetail,
+                  onChanged: _onChangedTsumo,
+                )
+              : ScoreDetailToggle(
+                  title: "ツモ系",
+                  label0: "なし",
+                  label1: "海底",
+                  groupValue: _tsumoDetail,
+                  onChanged: _onChangedTsumo,
+                ),
+              SizedBox(height: sizeBoxSpace),
+              ScoreDetailToggle(
+                title: "場風",
+                label0: "東場",
+                label1: "南場",
+                label2: "西場",
+                groupValue: _bakazeDetail,
+                onChanged: _onChangedBakaze
               ),
-              ScoreDetailIppatsu( // 一発.
-                enabled: _reachDetail != 0,
-                value: _ippatsuDetail,
-                onChanged: _onCheackedIppatsu,
+              SizedBox(height: sizeBoxSpace),
+              ScoreDetailToggle(
+                title: "自風",
+                label0: "東家",
+                label1: "南家",
+                label2: "西家",
+                label3: "北家",
+                groupValue: _oyakoDetail,
+                onChanged: _onChangedOyako
               ),
-              SizedBox(width: 20),
-              ScoreDetailAgari( // アガリ牌.
-                bufAgari: widget.bufAgari,
-                value: _agariDetail,
-                onChanged: _onChangedAgari,
-                colectedAgari: _colectedAgari
+              SizedBox(height: sizeBoxSpace),
+              Text("オプション", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center, // 縦中央で安定
+                children: [
+                  ScoreDetailDora( // ドラ.
+                    doraCount: _doraDetail,
+                    onPressedRemove: _onPressedRemove,
+                    onPressedAdd: _onPressedAdd,
+                  ),
+                  ScoreDetailIppatsu( // 一発.
+                    enabled: _reachDetail != 0,
+                    value: _ippatsuDetail,
+                    onChanged: _onCheackedIppatsu,
+                  ),
+                  SizedBox(width: 20),
+                  ScoreDetailAgari( // アガリ牌.
+                    bufAgari: widget.bufAgari,
+                    value: _agariDetail,
+                    onChanged: _onChangedAgari,
+                    colectedAgari: _colectedAgari
+                  )
+                ],
               )
             ],
           )
-        ],
+        )
       );
     } else if (widget.flagRon) { // ロンが押されたら.
-      content = Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          flagNaki
-          ? ScoreDetailToggle(
-              title: "リーチ系",
-              label0: "なし",
-              groupValue: _reachDetail,
-              onChanged: _onChangedReach,
-            )
-          : ScoreDetailToggle(
-              title: "リーチ系",
-              label0: "なし",
-              label1: "リーチ",
-              label2: "ダブルリーチ",
-              groupValue: _reachDetail,
-              onChanged: _onChangedReach,
-            ),
-          SizedBox(height: sizeBoxSpace),
-          ScoreDetailToggle(
-            title: "ロン系",
-            label0: "なし",
-            label1: "河底",
-            label2: "槍槓",
-            groupValue: _ronDetail,
-            onChanged: _onChangedRon
-          ),
-          SizedBox(height: sizeBoxSpace),
-          ScoreDetailToggle(
-            title: "場風",
-            label0: "東場",
-            label1: "南場",
-            label2: "西場",
-            groupValue: _bakazeDetail,
-            onChanged: _onChangedBakaze
-          ),
-          SizedBox(height: sizeBoxSpace),
-          ScoreDetailToggle(
-            title: "自風",
-            label0: "東家",
-            label1: "南家",
-            label2: "西家",
-            label3: "北家",
-            groupValue: _oyakoDetail,
-            onChanged: _onChangedOyako
-          ),
-          SizedBox(height: sizeBoxSpace),
-          Text("オプション", style: TextStyle(fontWeight: FontWeight.bold)),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+      content = SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ScoreDetailDora( // ドラ.
-                doraCount: _doraDetail,
-                onPressedRemove: _onPressedRemove,
-                onPressedAdd: _onPressedAdd,
+              flagNaki
+              ? ScoreDetailToggle(
+                  title: "リーチ系",
+                  label0: "なし",
+                  groupValue: _reachDetail,
+                  onChanged: _onChangedReach,
+                )
+              : ScoreDetailToggle(
+                  title: "リーチ系",
+                  label0: "なし",
+                  label1: "リーチ",
+                  label2: "ダブルリーチ",
+                  groupValue: _reachDetail,
+                  onChanged: _onChangedReach,
+                ),
+              SizedBox(height: sizeBoxSpace),
+              ScoreDetailToggle(
+                title: "ロン系",
+                label0: "なし",
+                label1: "河底",
+                label2: "槍槓",
+                groupValue: _ronDetail,
+                onChanged: _onChangedRon
               ),
-              ScoreDetailIppatsu( // 一発.
-                enabled: _reachDetail != 0,
-                value: _ippatsuDetail,
-                onChanged: _onCheackedIppatsu
+              SizedBox(height: sizeBoxSpace),
+              ScoreDetailToggle(
+                title: "場風",
+                label0: "東場",
+                label1: "南場",
+                label2: "西場",
+                groupValue: _bakazeDetail,
+                onChanged: _onChangedBakaze
               ),
-              SizedBox(width: 20),
-              ScoreDetailAgari( // アガリ牌.
-                bufAgari: widget.bufAgari,
-                value: _agariDetail,
-                onChanged: _onChangedAgari,
-                colectedAgari: _colectedAgari
+              SizedBox(height: sizeBoxSpace),
+              ScoreDetailToggle(
+                title: "自風",
+                label0: "東家",
+                label1: "南家",
+                label2: "西家",
+                label3: "北家",
+                groupValue: _oyakoDetail,
+                onChanged: _onChangedOyako
+              ),
+              SizedBox(height: sizeBoxSpace),
+              Text("オプション", style: TextStyle(fontWeight: FontWeight.bold)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  ScoreDetailDora( // ドラ.
+                    doraCount: _doraDetail,
+                    onPressedRemove: _onPressedRemove,
+                    onPressedAdd: _onPressedAdd,
+                  ),
+                  ScoreDetailIppatsu( // 一発.
+                    enabled: _reachDetail != 0,
+                    value: _ippatsuDetail,
+                    onChanged: _onCheackedIppatsu
+                  ),
+                  SizedBox(width: 20),
+                  ScoreDetailAgari( // アガリ牌.
+                    bufAgari: widget.bufAgari,
+                    value: _agariDetail,
+                    onChanged: _onChangedAgari,
+                    colectedAgari: _colectedAgari
+                  )
+                ],
               )
             ],
           )
-        ],
+        )
       );
     } else {
       // リセット.
