@@ -11,11 +11,11 @@ UI上で牌姿を選択し、役判定および点数計算を行う機能を実
 本リポジトリの実装は初期検証・UI設計の段階で役割を終えています。
 現在は、リアルタイム通信を前提とした新しい設計のプロジェクトを別リポジトリで開発しています。
 
-※ リアルタイム共有機能を実装した最新版はこちら：
+※ リアルタイム共有機能を実装した最新版はこちら：https://github.com/kanata-kikuchi/mahjong_lite
 
-https://github.com/kanata-kikuchi/mahjong_lite
 
 ---
+
 
 ## 主な機能
 
@@ -23,6 +23,10 @@ https://github.com/kanata-kikuchi/mahjong_lite
 - アガリ結果から最終持ち点を算出
 
 ※ 当初想定していたソケット通信による共有機能は、本リポジトリでは実装していません。
+
+
+---
+
 
 ## 技術構成
 
@@ -32,10 +36,12 @@ https://github.com/kanata-kikuchi/mahjong_lite
 フレームワーク：
 - Flutter
 
+
+---
+
+
 ## 使い方 / 起動方法
 
 動作確認は、GitHub Pages 上で行うことができます。
-
-- デモページ
 
 [GitHub Pagesで動作確認する](https://kanata-kikuchi.github.io/mahjong)
