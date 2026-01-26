@@ -12,6 +12,7 @@ UI上で牌姿を選択し、役判定および点数計算を行う機能を実
 現在は、リアルタイム通信を前提とした新しい設計のプロジェクトを別リポジトリで開発しています。
 
 ※ リアルタイム共有機能を実装した最新版はこちら：
+
 https://github.com/kanata-kikuchi/mahjong_lite
 
 ---
@@ -27,6 +28,7 @@ https://github.com/kanata-kikuchi/mahjong_lite
 
 使用言語：
 - Dart
+
 フレームワーク：
 - Flutter
 
@@ -35,4 +37,5 @@ https://github.com/kanata-kikuchi/mahjong_lite
 動作確認は、GitHub Pages 上で行うことができます。
 
 - デモページ
+
 [GitHub Pagesで動作確認する](https://kanata-kikuchi.github.io/mahjong)
