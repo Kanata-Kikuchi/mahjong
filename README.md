@@ -1,16 +1,38 @@
 # mahjong
 
-A new Flutter project.
+本プロジェクトは、友人と麻雀をする際に、
+自前の全自動卓では点数の共有ができないことに不便を感じたことから制作を始めました。
 
-## Getting Started
+UI上で牌姿を選択し、役判定および点数計算を行う機能を実装しています。
+アプリ開発の学習を兼ねて段階的に機能拡張を行ってきましたが、
+実戦での利用を想定した場合、複数端末間でのリアルタイムな点数共有が重要な要件であると判断しました。
 
-This project is a starting point for a Flutter application.
+そのため、ソケット通信による共有機能の導入を検討する段階で設計を見直し、
+本リポジトリの実装は初期検証・UI設計の段階で役割を終えています。
+現在は、リアルタイム通信を前提とした新しい設計のプロジェクトを別リポジトリで開発しています。
 
-A few resources to get you started if this is your first Flutter project:
+※ リアルタイム共有機能を実装した最新版はこちら：
+https://github.com/kanata-kikuchi/mahjong_lite
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 主な機能
+
+- アガリ牌をUI上で選択し、符・点数を計算
+- アガリ結果から最終持ち点を算出
+
+※ 当初想定していたソケット通信による共有機能は、本リポジトリでは実装していません。
+
+## 技術構成
+
+使用言語：
+- Dart
+フレームワーク：
+- Flutter
+
+## 使い方 / 起動方法
+
+動作確認は、GitHub Pages 上で行うことができます。
+
+- デモページ
+[GitHub Pagesで動作確認する](https://kanata-kikuchi.github.io/mahjong)
